@@ -143,6 +143,8 @@ ScriptableObjects/Level/LevelConfig/
 ScriptableObjects/Shop/ShopConfig/
 ScriptableObjects/Customer/CustomerPrototype/
 
+说明：配置类型（接口、字段结构）在 Core 定义；配置资产实例放在 Game（如 `Assets/Game/Gameplay/Level/LevelConfig/`）。
+
 
 # 6. 资源命名规则（Textures / Audio / FX）
 

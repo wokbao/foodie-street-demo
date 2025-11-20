@@ -9,13 +9,13 @@ Owner: 自己
 ## 1. 目标与结构
 - Core：通用框架、基础系统、工具、可复用模块  
 - Game：具体玩法与资源  
-- 所有协议（接口、数据结构、事件、配置格式）**必须在 Core 定义**
+- 所有协议（接口、数据结构、事件、配置格式）**必须在 Core 定义**；资产实例可放 Game（如 LevelConfig SO 实例）
 
 ## 2. 技术栈
 - Unity LTS  
 - C#10  
 - DI：VContainer  
-- 响应式：UniRx  
+- 响应式：R3（替代 UniRx）  
 - 异步：UniTask  
 - 分析器：Roslyn + StyleCop  
 - 警告视为错误（Werror）
@@ -41,7 +41,7 @@ Owner: 自己
 - 禁止构造函数做异步  
 - 有效使用 Singleton/Transient  
 
-## 7. UniRx
+## 7. R3（Reactive）
 - 所有订阅必须 Dispose  
 - 事件使用 MessageBroker or IObservable  
 - 避免在高频流中创建闭包  

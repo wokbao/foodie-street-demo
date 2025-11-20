@@ -51,3 +51,7 @@ crashlytics-build.properties
 /[Aa]ssets/StreamingAssets/aa/*
 
 *.DS_Store
+
+# NuGet (not used in Unity build)
+/Assets/Packages/
+/Assets/Packages.meta
