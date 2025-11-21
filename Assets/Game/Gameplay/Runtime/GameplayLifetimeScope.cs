@@ -1,7 +1,7 @@
 using VContainer;
 using VContainer.Unity;
 
-namespace FoodStreet.Game.Gameplay.Bootstrap
+namespace Assets.Game.Gameplay.Runtime
 {
     /// <summary>
     /// 玩法场景 Scope，负责注册关卡、店铺、顾客等依赖。

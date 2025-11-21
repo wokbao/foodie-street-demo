@@ -56,5 +56,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "foodie-street-demo.sln"
+    "dotnet.defaultSolution": "foodie-street-demo.sln",
+    "chatgpt.openOnStartup": true
 }

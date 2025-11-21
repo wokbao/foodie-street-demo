@@ -1,7 +1,7 @@
+using Core.Runtime;
 using VContainer;
-using FoodStreet.Core.Bootstrap;
 
-namespace FoodStreet.Game.Bootstrap
+namespace Game.Runtime
 {
     /// <summary>
     /// 游戏域常驻服务注册（进度、静态数据、音频、全局 UI 等），挂到 CoreBootstrap 物体上。
