@@ -262,7 +262,7 @@ MonoBehaviour:
     TypeName: 
   autoRun: 1
   autoInjectGameObjects: []
-  registrars: []
+  loggingConfig: {fileID: 11400000, guid: 6589e8c30265d1e4d870301cf9a199f4, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
