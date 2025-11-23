@@ -46,9 +46,14 @@ sysinfo.txt
 crashlytics-build.properties
 
 # Addressables
+# 保留 Addressable 配置（Assets/AddressableAssetsData），忽略构建产物
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*.bin*
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
-/[Aa]ssets/StreamingAssets/aa.meta
-/[Aa]ssets/StreamingAssets/aa/*
+/[Ss]erver[Dd]ata/
+/[Aa]ssets/[Ss]treaming[Aa]ssets/aa.meta
+/[Aa]ssets/[Ss]treaming[Aa]ssets/aa/*
+/[Ll]ibrary/com.unity.addressables/
+/addressables_content_state.bin
 
 *.DS_Store
 
