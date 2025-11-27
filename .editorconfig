@@ -1,0 +1,15 @@
+root = true
+
+[*.cs]
+#### Naming styles ####
+
+# Private instance fields should start with underscore
+dotnet_naming_rule.private_instance_fields_should_begin_with_underscore.severity = suggestion
+dotnet_naming_rule.private_instance_fields_should_begin_with_underscore.symbols = private_instance_fields
+dotnet_naming_rule.private_instance_fields_should_begin_with_underscore.style = private_instance_fields_style
+
+dotnet_naming_symbols.private_instance_fields.applicable_kinds = field
+dotnet_naming_symbols.private_instance_fields.applicable_accessibilities = private
+
+dotnet_naming_style.private_instance_fields_style.capitalization = camel_case
+dotnet_naming_style.private_instance_fields_style.required_prefix = _
