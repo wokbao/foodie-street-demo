@@ -68,9 +68,27 @@
 
 ---
 
-## 2025-11-27（家里 Mac）
+## 2025-11-28（家里 Mac）✅
 
-（待填写）
+### 完成的工作
+
+#### 1. 简化依赖注入配置
+- ✅ 移除 `LoggingInstaller` 模式，改为直接在 `CoreLifetimeScope` 中注册服务
+- ✅ 添加 `Core.Feature.Logging.Abstractions` using 语句
+- ✅ 直接注册 `UnityLogSink` 和 `LogService`
+- ✅ 创建 `CoreServicesTest.cs` 验证依赖注入是否正常工作
+
+**目的**：简化 DI 配置，移除不必要的抽象层，使代码更易理解
+
+### 技术讨论
+- 讨论了 VContainer 的依赖注入机制
+- 确认了父子容器的配置方式（需要在 Inspector 中设置 Parent 引用）
+- 理解了 Installer 模式的局限性（注册后不会自动调用 Install 方法）
+
+### 下一步计划
+- [ ] 在 Unity 中验证 CoreServicesTest
+- [ ] 检查 Scene 中的 LifetimeScope 父子容器配置
+- [ ] 开始实现场景管理系统（ISceneService）
 
 ---
 
