@@ -92,6 +92,30 @@
 
 ---
 
+## 2025-11-28（公司 Windows）✅
+
+### 完成的工作
+
+#### 1. 统一依赖注入注册风格
+- ✅ 将 `CoreLifetimeScope` 中的所有服务注册统一为链式风格
+- ✅ 修改 `AddressablesAssetProvider` 注册方式：
+  - 从 `builder.Register<IAssetProvider, AddressablesAssetProvider>(Lifetime.Singleton)`
+  - 改为 `builder.Register<AddressablesAssetProvider>(Lifetime.Singleton).As<IAssetProvider>()`
+- ✅ 与日志系统注册保持一致
+
+**目的**：统一代码风格，便于未来添加额外配置（如 `.WithParameter()`）
+
+### 技术讨论
+- 讨论了两种 VContainer 注册方式的区别
+- 确认统一使用链式注册风格，提升代码一致性和可扩展性
+
+### 下一步计划
+- [ ] 在 Unity 中验证 CoreServicesTest
+- [ ] 检查 Scene 中的 LifetimeScope 父子容器配置
+- [ ] 开始实现场景管理系统（ISceneService）
+
+---
+
 ## 使用说明
 
 ### 每日记录格式

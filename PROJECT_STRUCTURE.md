@@ -101,4 +101,60 @@ git submodule status
 
 ---
 
+## 📐 编码规范
+
+### 命名规范
+
+- **私有字段**：使用 `_camelCase` 格式（已在 `.editorconfig` 中强制执行）
+  ```csharp
+  private ILogService _logService;
+  private int _currentLevel;
+  ```
+
+### VContainer 依赖注入规范
+
+**统一使用链式注册风格**：
+
+```csharp
+// ✅ 推荐：链式风格
+builder.Register<ConcreteClass>(Lifetime.Singleton)
+    .As<IInterface>();
+
+// ❌ 避免：单行风格（除非有特殊原因）
+builder.Register<IInterface, ConcreteClass>(Lifetime.Singleton);
+```
+
+**优点**：
+1. 代码风格统一，易于维护
+2. 便于添加额外配置（`.WithParameter()`、`.AsSelf()` 等）
+3. 清晰区分具体实现类和接口
+
+**示例**：
+
+```csharp
+// 基础注册
+builder.Register<LogService>(Lifetime.Singleton)
+    .As<ILogService>();
+
+// 带参数配置
+builder.Register<GameConfig>(Lifetime.Singleton)
+    .WithParameter("configPath", "Configs/game.json")
+    .As<IGameConfig>();
+
+// 多接口映射
+builder.Register<AudioService>(Lifetime.Singleton)
+    .As<IAudioService>()
+    .As<IMusicPlayer>();
+```
+
+### 文档同步规范
+
+**每次代码修改后，必须同步更新以下文档**：
+
+1. **DEV_NOTES.md** - 记录当日工作内容和技术决策
+2. **ROADMAP.md** - 勾选完成的功能任务（如适用）
+3. **PROJECT_STRUCTURE.md** - 更新编码规范或架构说明（如适用）
+
+---
+
 **最后更新**：2025-11-28
