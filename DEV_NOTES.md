@@ -109,10 +109,44 @@
 - 讨论了两种 VContainer 注册方式的区别
 - 确认统一使用链式注册风格，提升代码一致性和可扩展性
 
+---
+
+## 2025-11-28（家里 Mac 晚上）✅
+
+### 完成的工作
+
+#### 1. 实现场景管理系统 (Scene Management System)
+- ✅ 定义 `ISceneService` 接口（异步加载/卸载、进度追踪）
+- ✅ 实现 `SceneService` 类（Addressables + UniTask）
+- ✅ 在 `CoreLifetimeScope` 中注册服务
+- ✅ 创建 `SceneServiceTest.cs` 测试脚本
+- ✅ 修复 `CoreServicesTest.cs` 编译错误（LogCategory.System → Core）
+
+#### 2. 创建核心服务初始化器 (CoreBootstrapper)
+- ✅ 实现 `CoreBootstrapper` 类（使用 VContainer 的 `IStartable`）
+- ✅ 在 `CoreLifetimeScope` 中注册为 EntryPoint
+- ✅ 统一管理所有核心服务的初始化流程
+- ✅ 添加初始化日志记录
+
+**目的**：提供统一的场景加载接口，支持异步操作和进度追踪；统一管理核心服务的初始化
+
+#### 3. 配置管理系统 (Config Management)
+- ✅ 重构 `CoreLifetimeScope` 以支持 Addressables 配置加载
+- ✅ 实现 `LoggingConfig` 的同步加载 (`WaitForCompletion`)
+- ✅ 确保在服务初始化前配置已就绪
+- ✅ 移除 Inspector 中的硬引用，解耦资源依赖
+
+**目的**：实现"先加载配置，后初始化服务"的框架思想，支持动态配置加载
+
+### 技术讨论
+- 使用 Addressables 管理场景资源
+- UniTask 替代 Unity AsyncOperation 实现更好的异步体验
+- 单场景架构设计（Single Scene Mode）
+- 启动时同步加载关键配置的必要性权衡
+
 ### 下一步计划
-- [ ] 在 Unity 中验证 CoreServicesTest
-- [ ] 检查 Scene 中的 LifetimeScope 父子容器配置
-- [ ] 开始实现场景管理系统（ISceneService）
+- [ ] 在 Unity 中测试场景加载功能
+- [ ] 实现对象池系统
 
 ---
 

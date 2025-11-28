@@ -2,9 +2,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Attach to Unity",
+            "name": "Attach to Unity (VSTU)",
             "type": "vstuc",
             "request": "attach"
+        },
+        {
+            "name": "Attach to Unity (Legacy)",
+            "type": "unity",
+            "request": "attach"
         }
-     ]
+    ]
 }

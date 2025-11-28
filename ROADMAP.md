@@ -20,14 +20,14 @@
 ## 🏗️ Phase 1: Core 层基础设施
 
 ### 场景管理（优先级：高）
-- [ ] 定义 `ISceneService` 接口
-- [ ] 实现 `SceneService`
-  - [ ] 异步场景加载
-  - [ ] 场景卸载
-  - [ ] 加载进度追踪
-  - [ ] 场景过渡效果支持
-- [ ] 在 `CoreLifetimeScope` 中注册
-- [ ] 编写单元测试
+- [x] 定义 `ISceneService` 接口
+- [x] 实现 `SceneService`
+  - [x] 异步场景加载
+  - [x] 场景卸载
+  - [x] 加载进度追踪
+  - [ ] 场景过渡效果支持（预留接口）
+- [x] 在 `CoreLifetimeScope` 中注册
+- [x] 编写单元测试（SceneServiceTest.cs）
 
 ### 对象池（优先级：高）
 - [ ] 定义 `IObjectPoolManager` 接口
@@ -313,5 +313,5 @@
 
 ---
 
-**最后更新**：2025-11-27  
+**最后更新**：2025-11-28  
 **当前版本**：v0.1.0-dev
