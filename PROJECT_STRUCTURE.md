@@ -147,6 +147,49 @@ builder.Register<AudioService>(Lifetime.Singleton)
     .As<IMusicPlayer>();
 ```
 
+### Git 提交规范
+
+**所有 Git 提交信息必须使用中文**：
+
+```bash
+# ✅ 正确示例
+git commit -m "feat(core): 实现场景管理系统和核心服务启动器"
+git commit -m "fix(logging): 修复日志配置加载失败的问题"
+git commit -m "docs: 更新开发日志和路线图"
+
+# ❌ 错误示例
+git commit -m "feat(core): implement scene management system"
+git commit -m "fix: fixed bug"
+```
+
+**提交信息格式**：
+- 使用约定式提交格式：`<type>(<scope>): <description>`
+- 常用类型：`feat`（新功能）、`fix`（修复）、`docs`（文档）、`refactor`（重构）、`test`（测试）
+- scope 可选，描述影响的模块
+- description 必须用中文简洁说明
+
+### 日志和异常信息规范
+
+**所有日志消息和异常信息必须使用中文**：
+
+```csharp
+// ✅ 正确示例
+_logService.Information(LogCategory.Core, "开始加载场景");
+Debug.LogWarning("Addressables 加载配置失败");
+throw new Exception("场景加载失败");
+
+// ❌ 错误示例
+_logService.Information(LogCategory.Core, "Loading scene...");
+Debug.LogWarning("Failed to load config");
+throw new Exception("Scene load failed");
+```
+
+**说明**：
+- 包括所有 `ILogService` 的日志调用
+- 包括所有 `Debug.Log/LogWarning/LogError` 调用
+- 包括所有异常消息 `throw new Exception(...)`
+- 注释可以用英文，但面向用户的信息必须中文
+
 ### 文档同步规范
 
 **每次代码修改后，必须同步更新以下文档**：
@@ -157,4 +200,5 @@ builder.Register<AudioService>(Lifetime.Singleton)
 
 ---
 
-**最后更新**：2025-11-28
+**最后更新**：2025-11-29
+
