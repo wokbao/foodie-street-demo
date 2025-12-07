@@ -18,7 +18,7 @@ MonoBehaviour:
   m_GUID: b6dc0689ea96c4f1eabe8d07927cf5c6
   m_SerializeEntries:
   - m_GUID: 6589e8c30265d1e4d870301cf9a199f4
-    m_Address: LoggingConfig
+    m_Address: Core/Configs/LoggingConfig
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
