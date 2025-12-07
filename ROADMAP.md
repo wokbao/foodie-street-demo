@@ -29,6 +29,20 @@
 - [x] 在 `CoreLifetimeScope` 中注册
 - [x] 编写单元测试（SceneServiceTest.cs）
 
+### 加载系统 / Loading System（优先级：高）
+- [ ] 定义 `ILoadingService` 接口
+- [ ] 实现加载进度追踪
+  - [ ] 进度更新接口
+  - [ ] 加载描述文本
+  - [ ] 支持嵌套加载（计数器）
+- [ ] 在 `GameLifetimeScope` 中实现 UI
+  - [ ] 进度条 UI
+  - [ ] 加载提示文字
+  - [ ] 旋转图标/动画
+- [ ] 集成到 SceneService
+  - [ ] 场景加载时显示进度
+  - [ ] 异步资源加载进度
+
 ### 对象池（优先级：高）
 - [ ] 定义 `IObjectPoolManager` 接口
 - [ ] 实现 GameObject 池化
@@ -36,13 +50,16 @@
 - [ ] 自动扩容和收缩机制
 - [ ] 在 `CoreLifetimeScope` 中注册
 
-### 配置管理（优先级：中）
-- [ ] 定义 `IConfigManager` 接口
-- [ ] 实现配置加载器
-- [ ] 支持 ScriptableObject 配置
-- [ ] 支持 JSON 配置
-- [ ] 配置热更新机制
-- [ ] 在 `CoreLifetimeScope` 中注册
+### 配置管理（优先级：高）✅
+- [x] 3A 级配置管理系统
+  - [x] ConfigManifest（声明式配置清单）
+  - [x] ConfigLoader（反射驱动的加载器）
+  - [x] ConfigRegistry（DI 自动注册）
+  - [x] IValidatableConfig（配置验证接口）
+- [x] 零代码扩展能力
+- [x] 环境隔离（Dev/Production）
+- [x] 失败降级策略
+- [ ] 配置热更新机制（预留）
 
 ### 事件总线（优先级：中）
 - [ ] 定义 `IEventBus` 接口

@@ -1,3 +1,70 @@
+# 🍜 Foodie Street 开发日志
+
+## 2025-12-07 (周六晚)
+
+### 实现企业级配置管理系统
+
+**背景**：
+- 原有的手动 Addressables 加载方式不够规范
+- 每添加新配置都需要修改代码
+- 需要一个可扩展的配置管理方案
+
+**实现内容**：
+1. **ConfigManifest（配置清单）**
+   - 声明式配置管理
+   - Inspector 可视化编辑
+   - 支持优先级、环境隔离
+   
+2. **ConfigLoader（配置加载器）**
+   - 基于反射的类型安全加载
+   - 批量加载优化
+   - 失败降级策略
+   - 详细加载日志
+   
+3. **ConfigRegistry（配置注册器）**
+   - 自动注册到 DI 容器
+   - 反射实现动态注册
+   
+4. **IValidatableConfig（验证接口）**
+   - 配置自我验证协议
+   - 支持多错误消息
+
+**架构特点**：
+- **零代码扩展**：添加新配置仅需在 Inspector 中操作
+- **类型安全**：反射 + 泛型保证正确性
+- **分层设计**：配置加载层不依赖服务层，避免循环依赖
+- **环境隔离**：支持开发/生产环境配置
+
+**测试验证**：
+- LoggingConfig 成功加载并注册
+- LogService 正确注入配置
+- 完整启动流程验证通过
+
+**目录结构**：
+```
+Assets/Core/
+├── Runtime/Configuration/    # 配置管理代码
+│   ├── ConfigManifest.cs
+│   ├── ConfigLoader.cs
+│   ├── ConfigRegistry.cs
+│   └── IValidatableConfig.cs
+└── Configs/                  # 配置资产目录
+    ├── CoreConfigManifest.asset
+    └── LoggingConfig.asset
+```
+
+**其他改进**：
+- 重构 CoreLifetimeScope 使用新配置系统
+- 添加详细代码注释说明加载顺序
+- 移除废弃的 LoggingInstaller 相关代码
+- 更新 Git 作者信息为 GitHub noreply 邮箱
+
+**下一步计划**：
+- Loading System（加载进度条系统）
+- Object Pool System（对象池系统）
+
+---
+
 # 开发日志
 
 > 记录每日开发进度，方便跨设备工作时快速同步上下文
