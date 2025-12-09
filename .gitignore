@@ -58,7 +58,7 @@ crashlytics-build.properties
 *.DS_Store
 
 # NuGet (not used in Unity build)
-/Assets/Packages/
-/Assets/Packages.meta
-/Assets/TextMesh Pro.meta
-/Assets/TextMesh Pro/
+# /Assets/Packages/
+# /Assets/Packages.meta
+# /Assets/TextMesh Pro.meta
+# /Assets/TextMesh Pro/
