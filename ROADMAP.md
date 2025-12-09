@@ -44,11 +44,11 @@
   - [x] 异步资源加载进度
 
 ### 对象池（优先级：高）
-- [ ] 定义 `IObjectPoolManager` 接口
-- [ ] 实现 GameObject 池化
-- [ ] 实现普通对象池化
+- [x] 定义 `IObjectPoolManager` 接口
+- [x] 实现 GameObject 池化
+- [x] 实现普通对象池化
 - [ ] 自动扩容和收缩机制
-- [ ] 在 `CoreLifetimeScope` 中注册
+- [x] 在 `CoreLifetimeScope` 中注册
 
 ### 配置管理（优先级：高）✅
 - [x] 3A 级配置管理系统
