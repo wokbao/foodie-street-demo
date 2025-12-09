@@ -30,18 +30,18 @@
 - [x] 编写单元测试（SceneServiceTest.cs）
 
 ### 加载系统 / Loading System（优先级：高）
-- [ ] 定义 `ILoadingService` 接口
-- [ ] 实现加载进度追踪
-  - [ ] 进度更新接口
-  - [ ] 加载描述文本
-  - [ ] 支持嵌套加载（计数器）
-- [ ] 在 `GameLifetimeScope` 中实现 UI
-  - [ ] 进度条 UI
-  - [ ] 加载提示文字
-  - [ ] 旋转图标/动画
-- [ ] 集成到 SceneService
-  - [ ] 场景加载时显示进度
-  - [ ] 异步资源加载进度
+- [x] 定义 `ILoadingService` 接口
+- [x] 实现加载进度追踪
+  - [x] 进度更新接口
+  - [x] 加载描述文本
+  - [x] 支持嵌套加载（计数器）
+- [x] 在 `GameLifetimeScope` 中实现 UI
+  - [x] 进度条 UI
+  - [x] 加载提示文字
+  - [x] 旋转图标/动画
+- [x] 集成到 SceneService
+  - [x] 场景加载时显示进度
+  - [x] 异步资源加载进度
 
 ### 对象池（优先级：高）
 - [ ] 定义 `IObjectPoolManager` 接口

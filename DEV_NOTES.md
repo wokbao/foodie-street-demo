@@ -1,5 +1,24 @@
 # 🍜 Foodie Street 开发日志
 
+## 2025-12-09 (周二)
+
+### 完成加载系统与 HUD 接入
+- ✅ 定义 `ILoadingService` + `LoadingState`，支持嵌套计数、进度、描述文本
+- ✅ 默认实现 `LoadingService`，提供 Begin/Dispose 作用域与进度上报，支持外部 `IProgress<float>` 透传
+- ✅ `SceneService` 加载流程接入 LoadingService，统一进度回调
+- ✅ Game 层挂载临时 Loading HUD（代码生成 Canvas/进度条/描述/旋转），通过 EntryPoint 常驻
+- ✅ CoreLifetimeScope 注册 LoadingService，GameLifetimeScope 注册 HUD EntryPoint
+- 🔜 HUD 可替换为美术稿/Prefab，并接入过渡动画或可取消/错误提示
+
+**动机**
+- 为场景加载提供统一的进度/状态汇聚，便于 UI 展示和后续扩展
+
+**下一步计划**
+- 高优先：对象池（IObjectPoolManager）或事件总线（IEventBus），择一先做
+- Loading UI 美化：改为 Prefab + Addressables，补充可取消/错误提示
+
+---
+
 ## 2025-12-07 (周六晚)
 
 ### 实现企业级配置管理系统
