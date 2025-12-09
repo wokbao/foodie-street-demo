@@ -1,5 +1,22 @@
 # 🍜 Foodie Street 开发日志
 
+## 2025-12-11 (周四)
+
+### 完成启动配置化与加载体验修正
+- ✅ 新增 `StartupConfig` + `StartupRunner`：配置首场景 Key 与 Loading 开关，启动后自动用 SceneService 加载首个业务场景
+- ✅ 增加 `DontDestroyOnLoadHelper`，确保 CoreLifetimeScope 常驻
+- ✅ 修复 Loading HUD 字体（Unity 6+ 使用 `LegacyRuntime.ttf`，避免内置 Arial 异常）
+- ✅ Addressables：为 StartupConfig/场景添加 Addressable 条目（Configs/Scenes 组）
+
+**动机**
+- 核心/业务解耦，可配置首场景与加载策略；避免内置字体失效导致 HUD 报错
+
+**下一步计划**
+- 视需要在引导场景补充轻量 UGUI HUD（监听 ILoadingService）以覆盖首场景加载
+- 跟进对象池实际落地（特效/弹窗）或事件总线更丰富的用例
+
+---
+
 ## 2025-12-10 (周三)
 
 ### 完成对象池管理器接入

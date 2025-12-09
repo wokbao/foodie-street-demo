@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Configs
+  m_Name: Scenes
   m_EditorClassIdentifier: 
-  m_GroupName: Configs
+  m_GroupName: Scenes
   m_Data:
     m_SerializedData: []
-  m_GUID: b6dc0689ea96c4f1eabe8d07927cf5c6
+  m_GUID: 20900ac18c79b28479b7ad8097811091
   m_SerializeEntries:
-  - m_GUID: 12261a0d5413dde4980cadc14a7cd6b3
-    m_Address: Core/Configs/StartupConfig.asset
+  - m_GUID: 4344e45be382845c1b0d1a92fc353880
+    m_Address: Game_Street_Gameplay
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6589e8c30265d1e4d870301cf9a199f4
-    m_Address: Core/Configs/LoggingConfig
+  - m_GUID: 6c556fffbe51643608b1afc56a432933
+    m_Address: Game_Menu_Main
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -31,5 +31,5 @@ MonoBehaviour:
   m_Settings: {fileID: 11400000, guid: 813658b5510344abf8005609512110cb, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 59b3f075b4c9844609824f28fb806f19, type: 2}
-    - {fileID: 11400000, guid: 35048756c5cc94ffca91c3859313d4aa, type: 2}
+    - {fileID: 11400000, guid: 6a03a8ba3d0e6bf4d9f5df732300e6b8, type: 2}
+    - {fileID: 11400000, guid: 82e6e7ef239fb1042bb13c8ebf03660b, type: 2}

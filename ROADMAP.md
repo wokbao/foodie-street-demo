@@ -42,6 +42,7 @@
 - [x] 集成到 SceneService
   - [x] 场景加载时显示进度
   - [x] 异步资源加载进度
+- [ ] 引导场景 Loading HUD（如首场景加载耗时>2s 再启用）
 
 ### 对象池（优先级：高）
 - [x] 定义 `IObjectPoolManager` 接口

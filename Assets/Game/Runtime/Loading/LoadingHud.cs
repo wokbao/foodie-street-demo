@@ -161,7 +161,9 @@ namespace Game.Runtime.Loading
             rect.offsetMax = Vector2.zero;
 
             var text = go.GetComponent<Text>();
-            text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            // Unity 6+ 不再提供 Arial.ttf 内置字体，改用 LegacyRuntime.ttf
+            var builtinFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            text.font = builtinFont;
             text.fontSize = 20;
             text.alignment = TextAnchor.MiddleCenter;
             text.color = new Color(1f, 1f, 1f, 0.92f);
