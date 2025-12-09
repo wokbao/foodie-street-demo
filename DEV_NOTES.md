@@ -1,5 +1,20 @@
 # 🍜 Foodie Street 开发日志
 
+## 2025-12-12 (周五)
+
+### 精简子模块提交流程
+- ✅ 新增脚本 `scripts/submodule_commit.sh`：一键完成子模块 add/commit/push + 主仓指针提交，减少重复命令
+- ✅ 默认父仓提交信息 `chore: bump <submodule> submodule`，可在第三个参数覆盖
+- ⚠️ 使用方法：`scripts/submodule_commit.sh Assets/Core "<子模块提交信息>" "<可选父仓提交信息>"`，需保证子模块改动已准备好 add/commit
+
+**动机**
+- 频繁提交子模块时需要连续执行 add/commit/push、再回到主仓更新指针，脚本化可减少机械步骤和遗漏风险
+
+**下一步计划**
+- 观察脚本是否覆盖日常场景，必要时补充参数（例如跳过 push、或支持多个子模块）
+
+---
+
 ## 2025-12-11 (周四)
 
 ### 完成启动配置化与加载体验修正
