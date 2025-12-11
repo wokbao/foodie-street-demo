@@ -1,6 +1,7 @@
 using System;
 using Core.Feature.Loading.Abstractions;
 using UnityEngine;
+using UnityEngine.UI;
 using VContainer.Unity;
 
 namespace Game.Runtime.Loading
@@ -12,6 +13,8 @@ namespace Game.Runtime.Loading
     {
         private readonly ILoadingService _loadingService;
         private GameObject _hudObject;
+        private GameObject _globalCanvasRoot;
+        private Canvas _globalCanvas;
 
         public LoadingHudEntryPoint(ILoadingService loadingService)
         {
@@ -20,11 +23,14 @@ namespace Game.Runtime.Loading
 
         public void Start()
         {
+            EnsureGlobalCanvas();
+
             _hudObject = new GameObject("LoadingOverlay");
+            _hudObject.transform.SetParent(_globalCanvasRoot.transform, false);
             UnityEngine.Object.DontDestroyOnLoad(_hudObject);
 
             var hud = _hudObject.AddComponent<LoadingHud>();
-            hud.Initialize(_loadingService);
+            hud.Initialize(_loadingService, _globalCanvas);
         }
 
         public void Dispose()
@@ -33,6 +39,63 @@ namespace Game.Runtime.Loading
             {
                 UnityEngine.Object.Destroy(_hudObject);
                 _hudObject = null;
+            }
+            if (_globalCanvasRoot != null)
+            {
+                UnityEngine.Object.Destroy(_globalCanvasRoot);
+                _globalCanvasRoot = null;
+                _globalCanvas = null;
+            }
+        }
+
+        private void EnsureGlobalCanvas()
+        {
+            if (_globalCanvasRoot != null && _globalCanvas != null)
+            {
+                return;
+            }
+
+            _globalCanvasRoot = GameObject.Find("GlobalUIRoot");
+            if (_globalCanvasRoot == null)
+            {
+                _globalCanvasRoot = new GameObject("GlobalUIRoot");
+                UnityEngine.Object.DontDestroyOnLoad(_globalCanvasRoot);
+
+                _globalCanvas = _globalCanvasRoot.AddComponent<Canvas>();
+                _globalCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                _globalCanvas.sortingOrder = 5000;
+
+                var scaler = _globalCanvasRoot.AddComponent<CanvasScaler>();
+                scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                scaler.referenceResolution = new Vector2(1920f, 1080f);
+                scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+                scaler.matchWidthOrHeight = 0.5f;
+
+                _globalCanvasRoot.AddComponent<GraphicRaycaster>();
+            }
+            else
+            {
+                _globalCanvas = _globalCanvasRoot.GetComponent<Canvas>();
+                if (_globalCanvas == null)
+                {
+                    _globalCanvas = _globalCanvasRoot.AddComponent<Canvas>();
+                    _globalCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                    _globalCanvas.sortingOrder = 5000;
+                }
+                var scaler = _globalCanvasRoot.GetComponent<CanvasScaler>();
+                if (scaler == null)
+                {
+                    scaler = _globalCanvasRoot.AddComponent<CanvasScaler>();
+                    scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                    scaler.referenceResolution = new Vector2(1920f, 1080f);
+                    scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+                    scaler.matchWidthOrHeight = 0.5f;
+                }
+                if (_globalCanvasRoot.GetComponent<GraphicRaycaster>() == null)
+                {
+                    _globalCanvasRoot.AddComponent<GraphicRaycaster>();
+                }
+                UnityEngine.Object.DontDestroyOnLoad(_globalCanvasRoot);
             }
         }
     }

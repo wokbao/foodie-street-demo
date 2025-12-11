@@ -7,6 +7,7 @@
 - ✅ 新增影院式 `SceneCinematicTransition`（上下黑条闭合 + 淡入淡出），默认在 `CoreLifetimeScope` 启用；保留 `SceneFadeTransition` 备用注册（注释掉）以便随时切换
 - ✅ `SceneService` 集成过渡流程：加载前淡出、加载后淡入，可与 LoadingService 并行
 - ✅ 场景过渡配置化：新增 `SceneTransitionConfig`（SO），`CoreLifetimeScope` Inspector 可选引用；支持影院式/黑场/禁用三种模式，未配置时回退默认；增加 `NoSceneTransition` 作为关闭过渡的实现
+- ✅ Loading HUD 全局化：`LoadingHudEntryPoint` 自动创建/复用全局 `GlobalUIRoot`（Canvas + CanvasScaler + GraphicRaycaster，DontDestroyOnLoad），`LoadingHud` 可复用外部 Canvas，避免各场景单独配置缩放
 
 **动机**
 - 以高品质过渡体验控制场景切换曝光：避免闪烁和未准备好内容露出，为后续美术过渡效果留扩展点

@@ -11,13 +11,17 @@ namespace Game.Runtime.Loading
     {
         private ILoadingService _loadingService;
         private CanvasGroup _canvasGroup;
+        private Canvas _canvas;
+        private bool _usingExternalCanvas;
         private Slider _progressBar;
         private Text _descriptionText;
         private RectTransform _spinner;
 
-        public void Initialize(ILoadingService loadingService)
+        public void Initialize(ILoadingService loadingService, Canvas externalCanvas = null)
         {
             _loadingService = loadingService;
+            _usingExternalCanvas = externalCanvas != null;
+            _canvas = externalCanvas;
             BuildVisualsIfNeeded();
 
             _loadingService.OnStateChanged += OnStateChanged;
@@ -76,19 +80,33 @@ namespace Game.Runtime.Loading
                 return;
             }
 
-            var canvas = gameObject.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 5000;
+            Transform parentTransform;
 
-            gameObject.AddComponent<CanvasScaler>();
-            gameObject.AddComponent<GraphicRaycaster>();
+            if (_usingExternalCanvas && _canvas != null)
+            {
+                parentTransform = _canvas.transform;
+            }
+            else
+            {
+                _canvas = gameObject.AddComponent<Canvas>();
+                _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                _canvas.sortingOrder = 5000;
 
-            _canvasGroup = gameObject.AddComponent<CanvasGroup>();
+                var scaler = gameObject.AddComponent<CanvasScaler>();
+                scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                scaler.referenceResolution = new Vector2(1920f, 1080f);
+                scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+                scaler.matchWidthOrHeight = 0.5f;
+                gameObject.AddComponent<GraphicRaycaster>();
+                parentTransform = transform;
+            }
+
+            var overlay = CreatePanel(parentTransform, "Overlay", new Color(0f, 0f, 0f, 0.55f));
+            _canvasGroup = overlay.AddComponent<CanvasGroup>();
             _canvasGroup.alpha = 0f;
             _canvasGroup.blocksRaycasts = false;
             _canvasGroup.interactable = false;
 
-            var overlay = CreatePanel(transform, "Overlay", new Color(0f, 0f, 0f, 0.55f));
             var root = overlay.GetComponent<RectTransform>();
 
             _spinner = CreateSpinner(root);
