@@ -18,7 +18,7 @@ MonoBehaviour:
   m_GUID: b6dc0689ea96c4f1eabe8d07927cf5c6
   m_SerializeEntries:
   - m_GUID: 12261a0d5413dde4980cadc14a7cd6b3
-    m_Address: Core/Configs/StartupConfig.asset
+    m_Address: Core/Configs/StartupConfig
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

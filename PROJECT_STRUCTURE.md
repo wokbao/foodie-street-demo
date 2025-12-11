@@ -1,56 +1,54 @@
 # 项目结构说明
 
-## 🏗️ 仓库架构
+## 📦 仓库架构
 
-本项目使用 **Git Submodule** 管理核心框架，分为两个独立仓库：
+项目使用 **Git Submodule** 管理核心框架，分为两部分：
 
 ### 1. 主仓库：`foodie-street-demo`
-- **用途**：游戏业务逻辑和场景
-- **包含内容**：
-  - `Assets/Game/` - 游戏业务代码（Menu、Gameplay 等）
-  - `Assets/Core/` - **Git Submodule**（指向 unity-core-framework）
+- **用途**：游戏业务逻辑与场景
+- **包含**：
+  - `Assets/Game/` - 业务代码（Menu、Gameplay 等）
+  - `Assets/Core/` - **Git Submodule**（指向 `unity-core-framework`）
   - `DEV_NOTES.md` - 开发日志
   - `ROADMAP.md` - 开发路线图
-  - Unity 项目配置（ProjectSettings、Packages 等）
+  - Unity 配置（ProjectSettings、Packages 等）
 
 ### 2. 子模块：`unity-core-framework`
 - **仓库地址**：`https://github.com/wokbao/unity-core-framework.git`
 - **本地路径**：`Assets/Core/`
 - **用途**：跨项目复用的核心框架
-- **包含内容**：
+- **包含**：
   - 基础设施服务（日志、资源管理、场景管理等）
   - 通用工具类
   - VContainer 容器配置
-  - 独立于具体游戏业务的代码
+  - 独立于业务的公共代码
 
 ---
 
 ## 📝 提交代码流程
 
-### 修改了 `Assets/Core/` 内的代码
-
+### 修改 `Assets/Core/`（子模块）
+> 优先使用脚本：`scripts/submodule_commit.sh <子模块路径> "<子模块提交信息>" ["<父仓库提交信息>"]`，一键完成“子模块提交 + 父仓库指针更新”。
 ```bash
-# 1. 进入子模块目录
+# 1. 进入子模块
 cd Assets/Core
 
-# 2. 提交到 unity-core-framework
+# 2. 在子模块提交
 git add .
 git commit -m "feat: 添加新功能"
-git push origin main  # 或你的分支名
+git push origin main  # 或你的分支
 
 # 3. 返回主仓库
 cd ../..
 
-# 4. 更新主仓库的子模块引用
+# 4. 更新主仓库的子模块指针
 git add Assets/Core
-git commit -m "chore: 更新 Core 子模块"
+git commit -m "chore: 更新 Core 子模块指针"
 git push
 ```
 
-### 修改了 `Assets/Game/` 或其他文件
-
+### 修改 `Assets/Game/` 或其他文件
 ```bash
-# 直接在主仓库提交
 git add .
 git commit -m "feat: 添加游戏功能"
 git push
@@ -58,7 +56,7 @@ git push
 
 ---
 
-## 🔄 子模块常用命令
+## 🛠 子模块常用命令
 
 ### 初次克隆项目
 ```bash
@@ -70,7 +68,7 @@ git submodule init
 git submodule update
 ```
 
-### 拉取最新代码（包含子模块）
+### 拉取最新代码（含子模块）
 ```bash
 git pull
 git submodule update --remote
@@ -84,53 +82,47 @@ git submodule status
 ---
 
 ## 🎯 为什么使用 Submodule？
-
-1. **代码复用**：Core 框架可以在多个项目中使用
-2. **独立维护**：框架代码和业务代码分开管理
-3. **版本控制**：主仓库可以锁定特定版本的 Core 框架
-4. **团队协作**：不同团队可以独立维护不同仓库
+1. **代码复用**：Core 框架可在多个项目中使用
+2. **独立维护**：框架代码与业务代码分开管理
+3. **版本控制**：主仓库可锁定特定版本的 Core 框架
+4. **团队协作**：不同团队可独立维护不同仓库
 
 ---
 
 ## ⚠️ 注意事项
-
-1. **修改 Core 代码后别忘了两次提交**（子模块 + 主仓库）
-2. **拉取代码后记得更新子模块** `git submodule update`
-3. **子模块默认处于分离头指针状态**，提交前确保在正确分支
-4. **主仓库只记录子模块的 commit hash**，不包含实际代码
+1. **修改 Core 代码后需两次提交**（子模块 + 主仓库）
+2. **拉取代码后请更新子模块**：`git submodule update`
+3. **子模块默认分离头指针**，提交前确保在正确分支
+4. **主仓库仅记录子模块的 commit hash**，不包含实际代码
+5. **中文文档编码**：所有 Markdown 统一使用 UTF-8；查看/编辑前优先确保终端/编辑器为 UTF-8（PowerShell 可先执行 `chcp 65001`）。一旦发现中文乱码，直接用正确 UTF-8 正文重写覆盖，切勿尝试 ISO-8859-1/GBK 等编码回转，以免二次污染。
 
 ---
 
-## 📐 编码规范
+## 📰 编码规范
 
 ### 命名规范
-
-- **私有字段**：使用 `_camelCase` 格式（已在 `.editorconfig` 中强制执行）
+- **私有字段**：使用 `_camelCase`（`.editorconfig` 已强制）
   ```csharp
   private ILogService _logService;
   private int _currentLevel;
   ```
 
 ### VContainer 依赖注入规范
-
-**统一使用链式注册风格**：
-
+统一使用链式注册：
 ```csharp
-// ✅ 推荐：链式风格
+// 推荐：链式注册
 builder.Register<ConcreteClass>(Lifetime.Singleton)
     .As<IInterface>();
 
-// ❌ 避免：单行风格（除非有特殊原因）
+// 避免：单行注册（除非有特殊原因）
 builder.Register<IInterface, ConcreteClass>(Lifetime.Singleton);
 ```
+优点：
+1. 风格统一，便于维护
+2. 易于追加配置（`.WithParameter()`、`.AsSelf()` 等）
+3. 清晰区分具体实现类与接口
 
-**优点**：
-1. 代码风格统一，易于维护
-2. 便于添加额外配置（`.WithParameter()`、`.AsSelf()` 等）
-3. 清晰区分具体实现类和接口
-
-**示例**：
-
+示例：
 ```csharp
 // 基础注册
 builder.Register<LogService>(Lifetime.Singleton)
@@ -148,57 +140,51 @@ builder.Register<AudioService>(Lifetime.Singleton)
 ```
 
 ### Git 提交规范
-
 **所有 Git 提交信息必须使用中文**：
-
 ```bash
-# ✅ 正确示例
+# 正确示例
 git commit -m "feat(core): 实现场景管理系统和核心服务启动器"
 git commit -m "fix(logging): 修复日志配置加载失败的问题"
 git commit -m "docs: 更新开发日志和路线图"
 
-# ❌ 错误示例
+# 错误示例
 git commit -m "feat(core): implement scene management system"
 git commit -m "fix: fixed bug"
 ```
-
-**提交信息格式**：
-- 使用约定式提交格式：`<type>(<scope>): <description>`
-- 常用类型：`feat`（新功能）、`fix`（修复）、`docs`（文档）、`refactor`（重构）、`test`（测试）
-- scope 可选，描述影响的模块
-- description 必须用中文简洁说明
+格式：`<type>(<scope>): <description>`  
+常用 type：`feat`、`fix`、`docs`、`refactor`、`test`  
+`scope` 可选，用于描述影响的模块；`description` 必须用中文简洁说明。
+- 提交必须包含标题（subject）和正文（body）；正文用列表概述主要改动，示例：
+```bash
+git commit -m "feat(core): 增强调度" \
+  -m "- 支持场景过渡动画" \
+  -m "- 增加进度回调"
+```
 
 ### 日志和异常信息规范
-
 **所有日志消息和异常信息必须使用中文**：
-
 ```csharp
-// ✅ 正确示例
+// 正确示例
 _logService.Information(LogCategory.Core, "开始加载场景");
 Debug.LogWarning("Addressables 加载配置失败");
 throw new Exception("场景加载失败");
 
-// ❌ 错误示例
+// 错误示例
 _logService.Information(LogCategory.Core, "Loading scene...");
 Debug.LogWarning("Failed to load config");
 throw new Exception("Scene load failed");
 ```
-
-**说明**：
 - 包括所有 `ILogService` 的日志调用
 - 包括所有 `Debug.Log/LogWarning/LogError` 调用
 - 包括所有异常消息 `throw new Exception(...)`
 - 注释可以用英文，但面向用户的信息必须中文
 
 ### 文档同步规范
-
 **每次代码修改后，必须同步更新以下文档**：
-
 1. **DEV_NOTES.md** - 记录当日工作内容和技术决策
 2. **ROADMAP.md** - 勾选完成的功能任务（如适用）
 3. **PROJECT_STRUCTURE.md** - 更新编码规范或架构说明（如适用）
 
 ---
 
-**最后更新**：2025-11-29
-
+**最后更新**：2025-12-14
