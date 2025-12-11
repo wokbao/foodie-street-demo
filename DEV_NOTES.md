@@ -4,16 +4,17 @@
 
 ### 完成的工作
 - ✅ 提供场景过渡接口 `ISceneTransition` 与默认实现 `SceneFadeTransition`（黑场淡入淡出，DontDestroyOnLoad Canvas，排序 8000）
+- ✅ 新增影院式 `SceneCinematicTransition`（上下黑条闭合 + 淡入淡出），默认在 `CoreLifetimeScope` 启用；保留 `SceneFadeTransition` 备用注册（注释掉）以便随时切换
 - ✅ `SceneService` 集成过渡流程：加载前淡出、加载后淡入，可与 LoadingService 并行
-- ✅ `CoreLifetimeScope` 注册过渡服务，启动到 Game_Menu_Main 全链路可用
 
 **动机**
-- 以 3A 过渡体验控制场景切换曝光：避免闪烁和未准备好内容露出，为后续美术过渡效果留扩展点
+- 以高品质过渡体验控制场景切换曝光：避免闪烁和未准备好内容露出，为后续美术过渡效果留扩展点
 
 **下一步计划**
 - [ ] 扩展过渡效果主题（快门/镜头光圈/噪点），支持可插拔策略
 - [ ] 与 Loading HUD 美术稿打通：共享排序层级、首场景耗时>2s 再显示
 - [ ] 增加场景切换开始/完成钩子，便于 UI/音频联动
+- [ ] ScriptableObject 过渡参数配置化（暂不做，待美术/策划有需求时再开启）
 
 ---
 

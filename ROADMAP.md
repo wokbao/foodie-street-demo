@@ -27,6 +27,7 @@
   - [x] 加载进度追踪
   - [x] 场景过渡效果支持（`ISceneTransition` + 默认淡入淡出）
 - [x] 在 `CoreLifetimeScope` 中注册
+- [ ] （可选）场景过渡参数配置化（ScriptableObject，可供美术/策划调节）
 - [x] 编写单元测试（SceneServiceTest.cs）
 
 ### 加载系统 / Loading System（优先级：高）
@@ -52,7 +53,7 @@
 - [x] 在 `CoreLifetimeScope` 中注册
 
 ### 配置管理（优先级：高）✅
-- [x] 3A 级配置管理系统
+- [x] 高规格配置管理系统
   - [x] ConfigManifest（声明式配置清单）
   - [x] ConfigLoader（反射驱动的加载器）
   - [x] ConfigRegistry（DI 自动注册）
