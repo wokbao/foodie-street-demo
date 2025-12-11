@@ -28,6 +28,7 @@
   - [x] 场景过渡效果支持（`ISceneTransition` + 默认淡入淡出）
 - [x] 在 `CoreLifetimeScope` 中注册
 - [ ] （可选）场景过渡参数配置化（ScriptableObject，可供美术/策划调节）
+- [ ] （可选）过渡配置远程/环境覆盖：加入 ConfigManifest 可选项，`IValidatableConfig` 校验，加载失败回退本地默认；保留 Inspector 直引用兜底
 - [x] 编写单元测试（SceneServiceTest.cs）
 
 ### 加载系统 / Loading System（优先级：高）
