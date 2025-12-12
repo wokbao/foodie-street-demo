@@ -11,6 +11,8 @@ namespace Game.Runtime.Loading
     /// </summary>
     public sealed class LoadingHudEntryPoint : IStartable, IDisposable
     {
+        private const int DefaultSortingOrder = 8000;
+
         private readonly ILoadingService _loadingService;
         private GameObject _hudObject;
         private GameObject _globalCanvasRoot;
@@ -27,7 +29,6 @@ namespace Game.Runtime.Loading
 
             _hudObject = new GameObject("LoadingOverlay");
             _hudObject.transform.SetParent(_globalCanvasRoot.transform, false);
-            UnityEngine.Object.DontDestroyOnLoad(_hudObject);
 
             var hud = _hudObject.AddComponent<LoadingHud>();
             hud.Initialize(_loadingService, _globalCanvas);
@@ -63,7 +64,7 @@ namespace Game.Runtime.Loading
 
                 _globalCanvas = _globalCanvasRoot.AddComponent<Canvas>();
                 _globalCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                _globalCanvas.sortingOrder = 5000;
+                _globalCanvas.sortingOrder = DefaultSortingOrder;
 
                 var scaler = _globalCanvasRoot.AddComponent<CanvasScaler>();
                 scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -80,7 +81,11 @@ namespace Game.Runtime.Loading
                 {
                     _globalCanvas = _globalCanvasRoot.AddComponent<Canvas>();
                     _globalCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                    _globalCanvas.sortingOrder = 5000;
+                    _globalCanvas.sortingOrder = DefaultSortingOrder;
+                }
+                else
+                {
+                    _globalCanvas.sortingOrder = DefaultSortingOrder;
                 }
                 var scaler = _globalCanvasRoot.GetComponent<CanvasScaler>();
                 if (scaler == null)

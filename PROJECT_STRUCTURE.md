@@ -95,6 +95,14 @@ git submodule status
 3. **子模块默认分离头指针**，提交前确保在正确分支
 4. **主仓库仅记录子模块的 commit hash**，不包含实际代码
 5. **中文文档编码**：所有 Markdown 统一使用 UTF-8；查看/编辑前优先确保终端/编辑器为 UTF-8（PowerShell 可先执行 `chcp 65001`）。一旦发现中文乱码，直接用正确 UTF-8 正文重写覆盖，切勿尝试 ISO-8859-1/GBK 等编码回转，以免二次污染。
+6. **PowerShell 默认编码提醒**：Windows PowerShell 文件类命令默认非 UTF-8，建议在个人 Profile 设置：
+   ```powershell
+   [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+   [Console]::InputEncoding  = [System.Text.Encoding]::UTF8
+   chcp 65001 > $null
+   $PSDefaultParameterValues['*:Encoding'] = 'utf8'
+   ```
+   这样无需每次加 `-Encoding UTF8`。
 
 ---
 
@@ -184,6 +192,11 @@ throw new Exception("Scene load failed");
 1. **DEV_NOTES.md** - 记录当日工作内容和技术决策
 2. **ROADMAP.md** - 勾选完成的功能任务（如适用）
 3. **PROJECT_STRUCTURE.md** - 更新编码规范或架构说明（如适用）
+- **新开对话时的文档更新规则**：先打开最新仓库版本（避免覆盖本地未合并的内容），按照原有格式追加/勾选，不重写历史记录；如遇冲突，优先保留仓库版本再追加本次更新。
+- **文档修改纪律**：
+  - 严禁整篇替换/重写，仅在原有基础上增改；改前先 `git status`/`git diff` 确认范围。
+  - 全程使用 UTF-8 读写；如发现乱码，直接用正确 UTF-8 正文覆盖，不做编码互转。
+  - 修改后自查 `git diff`，确认仅改预期段落和格式。
 
 ---
 

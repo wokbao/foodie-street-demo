@@ -9,6 +9,9 @@ namespace Game.Runtime.Loading
     /// </summary>
     public sealed class LoadingHud : MonoBehaviour
     {
+        private const float ShowDelaySeconds = 2f;
+        private const int DefaultSortingOrder = 8000;
+
         private ILoadingService _loadingService;
         private CanvasGroup _canvasGroup;
         private Canvas _canvas;
@@ -16,6 +19,7 @@ namespace Game.Runtime.Loading
         private Slider _progressBar;
         private Text _descriptionText;
         private RectTransform _spinner;
+        private Coroutine _showRoutine;
 
         public void Initialize(ILoadingService loadingService, Canvas externalCanvas = null)
         {
@@ -34,6 +38,14 @@ namespace Game.Runtime.Loading
             {
                 _loadingService.OnStateChanged -= OnStateChanged;
             }
+
+            if (_showRoutine != null)
+            {
+                StopCoroutine(_showRoutine);
+                _showRoutine = null;
+            }
+
+            HideInstant();
         }
 
         private void Update()
@@ -48,11 +60,22 @@ namespace Game.Runtime.Loading
         {
             var active = state.IsLoading;
 
-            if (_canvasGroup != null)
+            if (active)
             {
-                _canvasGroup.alpha = active ? 1f : 0f;
-                _canvasGroup.blocksRaycasts = active;
-                _canvasGroup.interactable = active;
+                if (_showRoutine == null)
+                {
+                    _showRoutine = StartCoroutine(ShowWithDelay());
+                }
+            }
+            else
+            {
+                if (_showRoutine != null)
+                {
+                    StopCoroutine(_showRoutine);
+                    _showRoutine = null;
+                }
+
+                HideInstant();
             }
 
             if (_progressBar != null)
@@ -69,7 +92,7 @@ namespace Game.Runtime.Loading
 
             if (_spinner != null)
             {
-                _spinner.gameObject.SetActive(active);
+                _spinner.gameObject.SetActive(active && (_canvasGroup?.alpha ?? 0f) > 0f);
             }
         }
 
@@ -84,13 +107,14 @@ namespace Game.Runtime.Loading
 
             if (_usingExternalCanvas && _canvas != null)
             {
+                _canvas.sortingOrder = DefaultSortingOrder;
                 parentTransform = _canvas.transform;
             }
             else
             {
                 _canvas = gameObject.AddComponent<Canvas>();
                 _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                _canvas.sortingOrder = 5000;
+                _canvas.sortingOrder = DefaultSortingOrder;
 
                 var scaler = gameObject.AddComponent<CanvasScaler>();
                 scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -205,6 +229,46 @@ namespace Game.Runtime.Loading
             image.color = new Color(1f, 1f, 1f, 0.9f);
 
             return rect;
+        }
+
+        private System.Collections.IEnumerator ShowWithDelay()
+        {
+            yield return new WaitForSecondsRealtime(ShowDelaySeconds);
+
+            if (_loadingService != null && !_loadingService.State.IsLoading)
+            {
+                _showRoutine = null;
+                yield break;
+            }
+
+            if (_canvasGroup != null)
+            {
+                _canvasGroup.alpha = 1f;
+                _canvasGroup.blocksRaycasts = true;
+                _canvasGroup.interactable = true;
+            }
+
+            if (_spinner != null)
+            {
+                _spinner.gameObject.SetActive(true);
+            }
+
+            _showRoutine = null;
+        }
+
+        private void HideInstant()
+        {
+            if (_canvasGroup != null)
+            {
+                _canvasGroup.alpha = 0f;
+                _canvasGroup.blocksRaycasts = false;
+                _canvasGroup.interactable = false;
+            }
+
+            if (_spinner != null)
+            {
+                _spinner.gameObject.SetActive(false);
+            }
         }
     }
 }
