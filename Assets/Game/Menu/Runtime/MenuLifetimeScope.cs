@@ -1,4 +1,5 @@
-﻿using Game.Runtime;
+﻿using Game.Menu.Runtime.Abstractions;
+using Game.Runtime;
 using VContainer;
 using VContainer.Unity;
 
@@ -33,7 +34,12 @@ namespace Game.Menu.Runtime
             // 已注册的菜单场景服务
             // ========================================
             
-            // （当前为空，待实现）
+            builder.RegisterComponentInHierarchy<MainMenuView>()
+                .As<IMainMenuView>();
+            
+            builder.Register<MainMenuPresenter>(Lifetime.Scoped)
+                .AsSelf()
+                .AsImplementedInterfaces();
             
             
             // ========================================

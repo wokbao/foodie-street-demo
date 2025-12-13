@@ -1,6 +1,23 @@
 # 🍪 Foodie Street 开发日志
 
-## 2025-12-15 (周一)
+## 2025-12-13 (周六)
+
+### 完成的工作
+- ✅ 主菜单 UI 框架落地：`MainMenuView`（Play/Settings/Quit 按钮、加载指示器、可配置 StartSceneKey/UseLoadingScreen）、`MainMenuPresenter`（事件订阅、调用 `ISceneService.LoadSceneAsync`、接入 `ILogService` 中文日志、加载中禁用交互）
+- ✅ Menu 场景接入：`MenuLifetimeScope` 注册视图与 Presenter，场景层级下挂 `MainMenu Root` 即可注入
+- ✅ 场景管理健壮性：`SceneService.UnloadCurrentSceneAsync` 在仅有单场景时跳过卸载，避免 “Unloading the last loaded scene” 警告
+
+### 遇到的问题
+- 加载首个业务场景时尝试卸载唯一场景触发警告（Addressables 不支持卸载最后一个场景）→ 已在 `SceneService` 跳过单场景卸载
+
+### 下一步计划
+- [ ] Settings 按钮接入导航/设置面板 Presenter
+- [ ] Quit 按钮接入确认弹窗或平台退出流程
+- [ ] 补充主菜单 UI 的 Loading 指示器样式（可用 `_loadingIndicator` 挂任意 GameObject）
+
+---
+
+## 2025-12-12 (周五)
 
 ### 完成的工作
 - ✅ 新增 `SceneShutterTransition`（占位实现，复用淡入淡出），预留快门风格过渡以便后续替换动画。
@@ -15,7 +32,7 @@
 
 ---
 
-## 2025-12-14 (周日)
+## 2025-12-12 (周五)
 
 ### 完成的工作
 - ✅ 提供场景过渡接口 `ISceneTransition` 与默认实现 `SceneFadeTransition`（黑场淡入淡出，DontDestroyOnLoad Canvas，排序 8000）
@@ -35,7 +52,7 @@
 
 ---
 
-## 2025-12-13 (周六)
+## 2025-12-12 (周五)
 
 ### 完成的工作
 - ✅ EventBus 整合：定义 `IEventBus`、实现 `EventBus`（支持优先级顺序），注册到 `CoreLifetimeScope` 并由 `CoreBootstrapper` 初始化，添加 `EventBusTest` 验证注入与发布
@@ -329,6 +346,25 @@ Assets/Core/
 ### 下一步计划
 - [ ] 在 Unity 中测试场景加载功能
 - [ ] 实现对象池系统
+
+---
+
+## 2025-12-16（Codex 协助）✅
+
+### 完成的工作
+
+#### 1. 主菜单 UI 框架
+- ✅ 创建 `IMainMenuView` 接口与 `MainMenuView` 组件（Play/Settings/Quit 按钮事件、加载指示器、StartSceneKey 配置）
+- ✅ 创建 `MainMenuPresenter`：处理按钮事件，调用 `ISceneService.LoadSceneAsync`，加载中禁用交互；Settings/Quit 预留钩子
+- ✅ 在 `MenuLifetimeScope` 注册 `MainMenuView` 与 `MainMenuPresenter`
+
+### 遇到的问题
+- 无
+
+### 下一步计划
+- [ ] 在 Unity 场景中放置 Canvas + MainMenuView，绑定 Play/Settings/Quit 按钮与 Loading 指示器
+- [ ] 设置 StartSceneKey（Addressables Key 或 Build Settings 名称），验证进入游戏流程
+- [ ] 接入 Settings/导航服务（未来的 MenuNavigationService/SettingsPresenter）
 
 ---
 
