@@ -1,6 +1,5 @@
 ﻿using Core.Feature.Logging.Abstractions;
 using Core.Feature.Logging.Runtime;
-using Game.Runtime;
 using VContainer;
 using VContainer.Unity;
 
@@ -20,17 +19,14 @@ namespace Game.Gameplay.Runtime
     /// 
     /// <para><b>与其他 LifetimeScope 的关系</b>：</para>
     /// <list type="bullet">
-    ///   <item>继承：GameLifetimeScope（代码继承，自动获取 Game 层服务）</item>
-    ///   <item>可访问：Core 层的所有基础设施服务</item>
+    ///   <item>父容器：GameLifetimeScope（通过 Inspector Parent 指向常驻的 Game Scope）</item>
+    ///   <item>可访问：Core 层的所有基础设施服务（通过 Game 继承）</item>
     /// </list>
     /// </summary>
-    public sealed class GameplayLifetimeScope : GameLifetimeScope
+    public sealed class GameplayLifetimeScope : LifetimeScope
     {
         protected override void Configure(IContainerBuilder builder)
         {
-            // 先调用父类注册，确保 Game 层服务可用
-            base.Configure(builder);
-            
             // ========================================
             // 已注册的玩法场景服务
             // ========================================

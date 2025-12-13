@@ -14,20 +14,20 @@ namespace Game.Menu.Runtime
     [DisallowMultipleComponent]
     public sealed class MainMenuView : MonoBehaviour, IMainMenuView
     {
-        [Header("Buttons")]
-        [SerializeField] private Button _playButton;
+        [Header("Buttons")][SerializeField] private Button _playButton;
         [SerializeField] private Button _settingsButton;
         [SerializeField] private Button _quitButton;
 
-        [Header("Loading")]
-        [SerializeField] private GameObject _loadingIndicator;
+        [Header("Loading")][SerializeField] private GameObject _loadingIndicator;
 
         [Header("Config")]
         [Tooltip("开始游戏时要加载的场景 Key（Addressables 或 Build Settings 名称）。")]
-        [SerializeField] private string _startSceneKey = "Gameplay";
+        [SerializeField]
+        private string _startSceneKey = "Gameplay";
 
         [Tooltip("进入游戏时是否显示加载界面。")]
-        [SerializeField] private bool _useLoadingScreen = true;
+        [SerializeField]
+        private bool _useLoadingScreen = true;
 
         public event Action PlayClicked;
         public event Action SettingsClicked;

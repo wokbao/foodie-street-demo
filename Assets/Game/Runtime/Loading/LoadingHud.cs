@@ -6,11 +6,15 @@ namespace Game.Runtime.Loading
 {
     /// <summary>
     /// 简易加载 HUD（纯代码生成 UI），用于临时展示进度、描述和旋转动画。
+    /// 如需美术版样式，请将延迟、排序层级等改为可配置 ScriptableObject（推荐放 Assets/Game/Configs/ 下并打 Addressable），在 EntryPoint 注入。
     /// </summary>
     public sealed class LoadingHud : MonoBehaviour
     {
-        private const float ShowDelaySeconds = 2f;
-        private const int DefaultSortingOrder = 8000;
+        // 默认值；可由 LoadingHudConfig 覆盖（建议放 Assets/Game/Configs/LoadingHudConfig.asset）。
+        private float _showDelaySeconds = 2f;
+        private int _sortingOrder = 8000;
+        private Color _overlayColor = new Color(0f, 0f, 0f, 0.55f);
+        private Color _spinnerColor = new Color(1f, 1f, 1f, 0.9f);
 
         private ILoadingService _loadingService;
         private CanvasGroup _canvasGroup;
@@ -21,11 +25,20 @@ namespace Game.Runtime.Loading
         private RectTransform _spinner;
         private Coroutine _showRoutine;
 
-        public void Initialize(ILoadingService loadingService, Canvas externalCanvas = null)
+        public void Initialize(ILoadingService loadingService, LoadingHudConfig config = null, Canvas externalCanvas = null)
         {
             _loadingService = loadingService;
             _usingExternalCanvas = externalCanvas != null;
             _canvas = externalCanvas;
+
+            if (config != null)
+            {
+                _showDelaySeconds = config.ShowDelaySeconds;
+                _sortingOrder = config.SortingOrder;
+                _overlayColor = config.OverlayColor;
+                _spinnerColor = config.SpinnerColor;
+            }
+
             BuildVisualsIfNeeded();
 
             _loadingService.OnStateChanged += OnStateChanged;
@@ -107,14 +120,14 @@ namespace Game.Runtime.Loading
 
             if (_usingExternalCanvas && _canvas != null)
             {
-                _canvas.sortingOrder = DefaultSortingOrder;
+                _canvas.sortingOrder = _sortingOrder;
                 parentTransform = _canvas.transform;
             }
             else
             {
                 _canvas = gameObject.AddComponent<Canvas>();
                 _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                _canvas.sortingOrder = DefaultSortingOrder;
+                _canvas.sortingOrder = _sortingOrder;
 
                 var scaler = gameObject.AddComponent<CanvasScaler>();
                 scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -125,7 +138,7 @@ namespace Game.Runtime.Loading
                 parentTransform = transform;
             }
 
-            var overlay = CreatePanel(parentTransform, "Overlay", new Color(0f, 0f, 0f, 0.55f));
+            var overlay = CreatePanel(parentTransform, "Overlay", _overlayColor);
             _canvasGroup = overlay.AddComponent<CanvasGroup>();
             _canvasGroup.alpha = 0f;
             _canvasGroup.blocksRaycasts = false;
@@ -226,14 +239,14 @@ namespace Game.Runtime.Loading
             rect.anchoredPosition = Vector2.zero;
 
             var image = go.GetComponent<Image>();
-            image.color = new Color(1f, 1f, 1f, 0.9f);
+            image.color = _spinnerColor;
 
             return rect;
         }
 
         private System.Collections.IEnumerator ShowWithDelay()
         {
-            yield return new WaitForSecondsRealtime(ShowDelaySeconds);
+            yield return new WaitForSecondsRealtime(_showDelaySeconds);
 
             if (_loadingService != null && !_loadingService.State.IsLoading)
             {

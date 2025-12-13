@@ -1,4 +1,7 @@
+using Core.Runtime.Configuration;
+using Game.Runtime.Configs;
 using Game.Runtime.Loading;
+using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
@@ -24,11 +27,37 @@ namespace Game.Runtime
     /// </summary>
     public class GameLifetimeScope : LifetimeScope
     {
+        private static GameLifetimeScope _instance;
+
+        [UnityEngine.SerializeField]
+        private GameConfigManifest _gameConfigManifest;
+
+        protected override void Awake()
+        {
+            // 常驻 Game Scope：首个实例常驻，后续重复实例销毁
+            if (_instance != null && _instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+            base.Awake();
+        }
+
         protected override void Configure(IContainerBuilder builder)
         {
             // ========================================
             // 已注册的游戏域服务
             // ========================================
+
+            // 通过 GameConfigManifest 批量加载配置（Addressables），并注册到容器
+            if (_gameConfigManifest != null && _gameConfigManifest.Entries.Count > 0)
+            {
+                var gameConfigResult = ConfigLoader.LoadFromManifest(_gameConfigManifest);
+                ConfigRegistry.RegisterToContainer(builder, gameConfigResult);
+            }
 
             builder.RegisterEntryPoint<LoadingHudEntryPoint>(Lifetime.Singleton);
 

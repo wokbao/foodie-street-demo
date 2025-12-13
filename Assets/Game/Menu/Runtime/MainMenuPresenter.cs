@@ -23,6 +23,8 @@ namespace Game.Menu.Runtime
         private readonly IMainMenuView _view;
         private readonly ISceneService _sceneService;
         private readonly ILoadingService _loadingService;
+        private readonly IMenuNavigationService _navigationService;
+        private readonly IQuitHandler _quitHandler;
         private readonly ILogService _logService;
 
         private bool _isLoading;
@@ -32,11 +34,15 @@ namespace Game.Menu.Runtime
             IMainMenuView view,
             ISceneService sceneService,
             ILoadingService loadingService,
+            IMenuNavigationService navigationService,
+            IQuitHandler quitHandler,
             ILogService logService)
         {
             _view = view;
             _sceneService = sceneService;
             _loadingService = loadingService;
+            _navigationService = navigationService;
+            _quitHandler = quitHandler;
             _logService = logService;
         }
 
@@ -66,20 +72,12 @@ namespace Game.Menu.Runtime
 
         private void OnSettingsClicked()
         {
-            // 预留：打开设置面板或跳转设置页。
-            // 可与未来的 MenuNavigationService / SettingsPresenter 对接。
-            _logService?.Information(LogCategory.Menu,
-                "[主菜单] 点击设置（待接入设置/导航服务）");
+            _navigationService.ShowSettingsAsync().Forget();
         }
 
         private void OnQuitClicked()
         {
-            // 预留：退出提示弹窗，当前直接退出。
-            _logService?.Information(LogCategory.Menu, "[主菜单] 点击退出 → Application.Quit()");
-            Application.Quit();
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#endif
+            _quitHandler.RequestQuitAsync().Forget();
         }
 
         private async UniTask StartGameAsync(CancellationToken token)

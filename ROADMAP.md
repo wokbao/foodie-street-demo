@@ -7,7 +7,7 @@
 ## 📊 总体进度
 
 - [x] 项目架构设计
-- [x] LifetimeScope 层级搭建
+- [x] LifetimeScope 层级搭建（Core 常驻 → Game 常驻 → Menu/Gameplay 子容器）
 - [x] 基础日志系统
 - [x] 资源管理系统（Addressables）
 - [ ] Core 层基础设施完善
@@ -42,6 +42,7 @@
   - [x] 进度条 UI
   - [x] 加载提示文字
   - [x] 旋转图标/动画
+- [x] Loading HUD 配置化（LoadingHudConfig SO，GameConfigManifest 统一加载）
 - [x] 集成于 SceneService
   - [x] 场景加载时显示进度
   - [x] 异步资源加载进度

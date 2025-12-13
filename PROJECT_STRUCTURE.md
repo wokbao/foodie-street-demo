@@ -106,6 +106,19 @@ git submodule status
 
 ---
 
+## 🏗 运行时代码架构（LifetimeScope 层级）
+
+- **CoreLifetimeScope**：全局父容器（放在首场景且可常驻），负责加载 Core ConfigManifest、注册核心服务。
+- **GameLifetimeScope**：常驻 Game 容器（Parent = CoreLifetimeScope，建议命名 `GameLifetimeScope_Root` 并 DontDestroyOnLoad）。首个场景加载 `GameConfigManifest`，通过 `ConfigLoader + ConfigRegistry` 注册 Game 配置（如 `LoadingHudConfig`），之后子场景复用。
+- **MenuLifetimeScope / GameplayLifetimeScope**：场景级子容器，Parent 指向常驻的 GameLifetimeScope，不再继承 Game 类。仅注册本场景服务/组件，避免重复加载配置。
+
+使用提示：
+- 只在一个场景放置 GameLifetimeScope，并在 Inspector 引用 `GameConfigManifest`（含 `LoadingHudConfig` Addressable Key 等）。
+- 各场景的 LifetimeScope（Menu/Gameplay）在 Inspector 将 Parent 设置为常驻的 GameLifetimeScope，即可访问 Core/Game 服务。
+- LoadingHudConfig 等配置由 Manifest 自动加载注册，无需在子场景手动引用。
+
+---
+
 ## 📰 编码规范
 
 ### 命名规范

@@ -1,5 +1,25 @@
 # 🍪 Foodie Street 开发日志
 
+## 2025-12-14 (周日)
+
+### 完成的工作
+- ✅ VContainer 层级梳理：`GameLifetimeScope` 常驻（Parent=Core），`MenuLifetimeScope`/`GameplayLifetimeScope` 改为子容器（Parent 指向常驻 Game），避免重复加载配置/服务
+- ✅ 配置加载统一接口：新增 `IConfigManifest`，`ConfigLoader` 支持接口；Game 侧 `GameConfigManifest` 复用 Core Loader/Registry
+- ✅ 菜单退出/设置预留：新增 `IMenuNavigationService`、`IQuitHandler` 默认实现，MainMenuPresenter 调用接口
+- ✅ Loading HUD 配置化：新增 `LoadingHudConfig`（SO），在 GameManifest 中加载并注册；LoadingHud 支持配置延迟/排序/颜色
+- ✅ 常驻 Game Scope 使用清单加载配置，子场景仅引用 Parent，避免多场景重复配置
+
+### 遇到的问题
+- Gameplay 场景缺少 LoadingHudConfig 注册导致解析失败 → 通过常驻 Game Scope + Manifest 统一加载解决
+- 多个 GameLifetimeScope 并存导致重复加载 → 改为常驻单例 + 子 Scope Parent 机制
+
+### 下一步计划
+- [ ] Settings 按钮接入实际设置/导航面板
+- [ ] Quit 按钮接入确认弹窗/平台退出逻辑
+- [ ] LoadingHudConfig Addressable 流程完善（必要时加清单校验脚本）
+
+---
+
 ## 2025-12-13 (周六)
 
 ### 完成的工作
