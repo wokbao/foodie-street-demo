@@ -176,6 +176,8 @@
 - [ ] 画质设置
 - [ ] 语言切换
 - [ ] 在 `MenuLifetimeScope` 中注册
+- [ ] 预制化通用弹窗/面板（UGUI+TMP），统一样式/动画（遮罩、渐隐/位移）
+- [ ] Settings/Quit 弹窗接入 `IMenuNavigationService` / `IQuitHandler`，复用统一 UI 资产
 
 ### 菜单导航（优先级：中）
 - [ ] 定义 `IMenuNavigationService` 接口
@@ -250,6 +252,7 @@
 - [ ] 暂停菜单
 - [ ] 结算界面
 - [ ] 在 `GameplayLifetimeScope` 中注册
+- [ ] 建立通用 UI 资产库（按钮/弹窗/列表项），Addressable 化，挂载到 UI 工厂/池
 
 ### 特效管理（优先级：低）
 - [ ] 定义 `IVFXManager` 接口
