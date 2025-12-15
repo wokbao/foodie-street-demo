@@ -251,7 +251,7 @@ namespace Game.UI.Editor
             var cancelButton = CreateButtonObject("CancelButton", "取消", isPrimary: false, addLayoutElement: true, preferredWidth: 320f, preferredHeight: 88f);
             cancelButton.transform.SetParent(buttonRow.transform, false);
 
-            var confirmButton = CreateButtonObject("ConfirmButton", "确认", isPrimary: true, addLayoutElement: true, preferredWidth: 320f, preferredHeight: 88f);
+            var confirmButton = CreateButtonObject("ConfirmButton", "确认", isPrimary: false, addLayoutElement: true, preferredWidth: 320f, preferredHeight: 88f);
             confirmButton.transform.SetParent(buttonRow.transform, false);
 
             var dialog = root.AddComponent<UIConfirmDialog>();
