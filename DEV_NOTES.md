@@ -6,11 +6,12 @@
 - ✅ UI 基础库脚手架：新增 UI Prefab 生成器（UGUI + TMP）与基础交互脚本（按钮缩放反馈、通用确认/提示弹窗、带标题面板骨架）
 - ✅ Addressables 规划：统一 Key（`UI/ButtonPrimary`、`UI/ButtonSecondary`、`UI/Panel/Base`、`UI/Panel/Header`、`UI/Dialog/Confirm`、`UI/Dialog/Info`）
 - ✅ Quit 弹窗：修复隐藏状态下无法启动协程的问题，保证默认隐藏时也能正常弹出确认窗
+- ✅ 菜单接线：Settings 面板可开关（导航服务），Quit 按钮接入确认弹窗（退出/取消）
 
 ### 下一步计划
-- [ ] 在 Unity 中执行菜单：`Tools/Game UI/生成基础 UI Prefab（Addressables）` 生成并校验 Prefab 外观/字体
-- [ ] Settings 面板落地：用 `UI_PanelWithHeader` 做骨架，接入 `IMenuNavigationService`
-- [ ] Quit 确认弹窗落地：用 `UI_DialogConfirm` 接入 `IQuitHandler`
+- [ ] Settings 功能填充：音量/语言等占位控件与数据流
+- [ ] 菜单 UI 细化：背景/布局/样式调整，校验 Addressable Prefab 外观
+- [ ] Quit 弹窗文案/样式确认（如需）
 
 ## 2025-12-14 (周日)
 
