@@ -5,6 +5,7 @@
 ### 完成的工作
 - ✅ UI 基础库脚手架：新增 UI Prefab 生成器（UGUI + TMP）与基础交互脚本（按钮缩放反馈、通用确认/提示弹窗、带标题面板骨架）
 - ✅ Addressables 规划：统一 Key（`UI/ButtonPrimary`、`UI/ButtonSecondary`、`UI/Panel/Base`、`UI/Panel/Header`、`UI/Dialog/Confirm`、`UI/Dialog/Info`）
+- ✅ Quit 弹窗：修复隐藏状态下无法启动协程的问题，保证默认隐藏时也能正常弹出确认窗
 
 ### 下一步计划
 - [ ] 在 Unity 中执行菜单：`Tools/Game UI/生成基础 UI Prefab（Addressables）` 生成并校验 Prefab 外观/字体

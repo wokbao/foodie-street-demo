@@ -84,6 +84,18 @@ namespace Game.UI.Runtime
                 _routine = null;
             }
 
+            if (visible && !gameObject.activeSelf)
+            {
+                gameObject.SetActive(true);
+            }
+
+            // 如果脚本还未启用或对象仍未激活，直接同步状态，避免协程报错。
+            if (!isActiveAndEnabled)
+            {
+                ApplyState(visible, 1f);
+                return;
+            }
+
             if (instant)
             {
                 ApplyState(visible, 1f);

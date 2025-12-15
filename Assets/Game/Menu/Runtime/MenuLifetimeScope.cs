@@ -1,4 +1,5 @@
 ﻿using Game.Menu.Runtime.Abstractions;
+using Game.UI.Runtime;
 using VContainer;
 using VContainer.Unity;
 
@@ -32,6 +33,10 @@ namespace Game.Menu.Runtime
 
             builder.RegisterComponentInHierarchy<MainMenuView>()
                 .As<IMainMenuView>();
+
+            // 场景中的 UI 组件
+            builder.RegisterComponentInHierarchy<UIPanelWithHeader>();
+            builder.RegisterComponentInHierarchy<UIConfirmDialog>();
 
             builder.Register<IMenuNavigationService, MenuNavigationService>(Lifetime.Scoped);
             builder.Register<IQuitHandler, DefaultQuitHandler>(Lifetime.Scoped);
