@@ -12,9 +12,8 @@ namespace Game.UI.Editor
 {
     public static class UiPrefabGenerator
     {
-        private const string ButtonsDir = "Assets/Game/UI/Prefabs/Buttons";
-        private const string PanelsDir = "Assets/Game/UI/Prefabs/Panels";
-        private const string DialogsDir = "Assets/Game/UI/Prefabs/Dialogs";
+        private const string ButtonsDir = "Assets/Game/UI/Common/Buttons";
+        private const string PanelsDir = "Assets/Game/UI/Common/Panels";
 
         private static readonly Color ColorPrimary = Hex("#FF9FB3");
         private static readonly Color ColorSecondary = Hex("#F7F7F7");
@@ -27,28 +26,18 @@ namespace Game.UI.Editor
         {
             EnsureFolder(ButtonsDir);
             EnsureFolder(PanelsDir);
-            EnsureFolder(DialogsDir);
 
             var buttonPrimaryPath = $"{ButtonsDir}/UI_ButtonPrimary.prefab";
             var buttonSecondaryPath = $"{ButtonsDir}/UI_ButtonSecondary.prefab";
             var panelBasePath = $"{PanelsDir}/UI_PanelBase.prefab";
-            var panelWithHeaderPath = $"{PanelsDir}/UI_PanelWithHeader.prefab";
-            var dialogConfirmPath = $"{DialogsDir}/UI_DialogConfirm.prefab";
-            var dialogInfoPath = $"{DialogsDir}/UI_DialogInfo.prefab";
 
             CreateButtonPrefab(buttonPrimaryPath, "UI_ButtonPrimary", isPrimary: true);
             CreateButtonPrefab(buttonSecondaryPath, "UI_ButtonSecondary", isPrimary: false);
             CreatePanelBasePrefab(panelBasePath);
-            CreatePanelWithHeaderPrefab(panelWithHeaderPath);
-            CreateConfirmDialogPrefab(dialogConfirmPath);
-            CreateInfoDialogPrefab(dialogInfoPath);
 
             MarkAddressable(buttonPrimaryPath, "UI/ButtonPrimary");
             MarkAddressable(buttonSecondaryPath, "UI/ButtonSecondary");
             MarkAddressable(panelBasePath, "UI/Panel/Base");
-            MarkAddressable(panelWithHeaderPath, "UI/Panel/Header");
-            MarkAddressable(dialogConfirmPath, "UI/Dialog/Confirm");
-            MarkAddressable(dialogInfoPath, "UI/Dialog/Info");
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
