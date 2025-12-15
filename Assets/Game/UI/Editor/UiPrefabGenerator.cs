@@ -244,17 +244,15 @@ namespace Game.UI.Editor
             layout.childAlignment = TextAnchor.MiddleCenter;
             layout.spacing = 16f;
             layout.childControlHeight = true;
-            layout.childControlWidth = true;
+            layout.childControlWidth = false;
             layout.childForceExpandHeight = false;
             layout.childForceExpandWidth = false;
 
-            var cancelButton = CreateButtonObject("CancelButton", "取消", isPrimary: false);
+            var cancelButton = CreateButtonObject("CancelButton", "取消", isPrimary: false, addLayoutElement: true, preferredWidth: 320f, preferredHeight: 88f);
             cancelButton.transform.SetParent(buttonRow.transform, false);
-            cancelButton.GetComponent<RectTransform>().sizeDelta = new Vector2(320f, 88f);
 
-            var confirmButton = CreateButtonObject("ConfirmButton", "确认", isPrimary: true);
+            var confirmButton = CreateButtonObject("ConfirmButton", "确认", isPrimary: true, addLayoutElement: true, preferredWidth: 320f, preferredHeight: 88f);
             confirmButton.transform.SetParent(buttonRow.transform, false);
-            confirmButton.GetComponent<RectTransform>().sizeDelta = new Vector2(320f, 88f);
 
             var dialog = root.AddComponent<UIConfirmDialog>();
             dialog.EditorWireUp(canvasGroup, panelRect, message, confirmButton.GetComponent<Button>(), cancelButton.GetComponent<Button>());
@@ -325,7 +323,7 @@ namespace Game.UI.Editor
             SavePrefab(path, root);
         }
 
-        private static GameObject CreateButtonObject(string name, string text, bool isPrimary)
+        private static GameObject CreateButtonObject(string name, string text, bool isPrimary, bool addLayoutElement = false, float preferredWidth = 0f, float preferredHeight = 0f)
         {
             var root = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Button));
             var image = root.GetComponent<Image>();
@@ -352,6 +350,13 @@ namespace Game.UI.Editor
             label.color = isPrimary ? Color.white : ColorText;
             label.fontSize = 22f;
             TryAssignDefaultFont(label);
+
+            if (addLayoutElement)
+            {
+                var layout = root.AddComponent<LayoutElement>();
+                if (preferredWidth > 0f) layout.preferredWidth = preferredWidth;
+                if (preferredHeight > 0f) layout.preferredHeight = preferredHeight;
+            }
 
             return root;
         }
