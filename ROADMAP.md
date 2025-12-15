@@ -176,7 +176,7 @@
 - [ ] 画质设置
 - [ ] 语言切换
 - [ ] 在 `MenuLifetimeScope` 中注册
-- [ ] 预制化通用弹窗/面板（UGUI+TMP），统一样式/动画（遮罩、渐隐/位移）
+- [x] 预制化通用弹窗/面板（UGUI+TMP），统一样式/动画（遮罩、渐隐/位移）
 - [ ] Settings/Quit 弹窗接入 `IMenuNavigationService` / `IQuitHandler`，复用统一 UI 资产
 
 ### 菜单导航（优先级：中）

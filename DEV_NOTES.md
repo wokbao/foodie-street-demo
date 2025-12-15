@@ -1,5 +1,16 @@
 # 🍪 Foodie Street 开发日志
 
+## 2025-12-15 (周一)
+
+### 完成的工作
+- ✅ UI 基础库脚手架：新增 UI Prefab 生成器（UGUI + TMP）与基础交互脚本（按钮缩放反馈、通用确认/提示弹窗、带标题面板骨架）
+- ✅ Addressables 规划：统一 Key（`UI/ButtonPrimary`、`UI/ButtonSecondary`、`UI/Panel/Base`、`UI/Panel/Header`、`UI/Dialog/Confirm`、`UI/Dialog/Info`）
+
+### 下一步计划
+- [ ] 在 Unity 中执行菜单：`Tools/Game UI/生成基础 UI Prefab（Addressables）` 生成并校验 Prefab 外观/字体
+- [ ] Settings 面板落地：用 `UI_PanelWithHeader` 做骨架，接入 `IMenuNavigationService`
+- [ ] Quit 确认弹窗落地：用 `UI_DialogConfirm` 接入 `IQuitHandler`
+
 ## 2025-12-14 (周日)
 
 ### 完成的工作
