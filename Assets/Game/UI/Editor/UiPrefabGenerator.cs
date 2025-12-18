@@ -420,11 +420,11 @@ namespace Game.UI.Editor
                 return;
             }
 
-            var group = settings.FindGroup("GameUI");
+            var group = settings.FindGroup("CommonUI");
             if (group == null)
             {
                 var schemas = settings.DefaultGroup != null ? settings.DefaultGroup.Schemas : null;
-                group = settings.CreateGroup("GameUI", false, false, false, schemas);
+                group = settings.CreateGroup("CommonUI", false, false, false, schemas);
             }
             var entry = settings.CreateOrMoveEntry(guid, group, false, false);
             entry.address = address;
