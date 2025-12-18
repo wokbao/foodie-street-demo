@@ -184,6 +184,7 @@
 - [ ] 统一进出场动画参数：淡入+缩放+遮罩渐隐，配置化（SO/常量）
 - [ ] 输入/适配：键盘/手柄导航、Esc/取消关闭、Safe Area、对比度/字体可读性检查
 - [ ] 设置数据流：接入配置服务（音量/语言等），提供持久化接口（可先 stub）
+- [ ] Addressables 打包策略：CommonUI/Screens 暂时 Pack Together，后续按改动频次拆分优化
 
 ### 菜单导航（优先级：中）
 - [ ] 定义 `IMenuNavigationService` 接口
