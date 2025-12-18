@@ -31,9 +31,6 @@ namespace Game.Menu.Runtime
             // 已注册的菜单场景服务
             // ========================================
 
-            builder.RegisterComponentInHierarchy<MainMenuView>()
-                .As<IMainMenuView>();
-
             // 场景中的 UI 组件
             builder.RegisterComponentInHierarchy<UIPanelWithHeader>();
             builder.RegisterComponentInHierarchy<UIConfirmDialog>();
@@ -41,9 +38,7 @@ namespace Game.Menu.Runtime
             builder.Register<IMenuNavigationService, MenuNavigationService>(Lifetime.Scoped);
             builder.Register<IQuitHandler, DefaultQuitHandler>(Lifetime.Scoped);
 
-            builder.Register<MainMenuPresenter>(Lifetime.Scoped)
-                .AsSelf()
-                .AsImplementedInterfaces();
+            builder.RegisterEntryPoint<MainMenuScreenLoader>(Lifetime.Scoped);
 
 
             // ========================================
