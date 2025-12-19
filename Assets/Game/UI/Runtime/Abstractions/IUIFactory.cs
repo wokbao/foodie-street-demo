@@ -17,7 +17,7 @@ namespace Game.UI.Runtime.Abstractions
         /// <summary>
         /// 按 Key 加载并实例化 UI 预制体。
         /// </summary>
-        UniTask<GameObject> InstantiateAsync(string key, Transform parent = null, CancellationToken ct = default);
+        UniTask<GameObject> InstantiateAsync(string key, Transform parent = null, IProgress<float> progress = null, CancellationToken ct = default);
 
         /// <summary>
         /// 释放指定 Key 的已加载资源（会清理缓存），如需彻底卸载请确保实例已销毁。
@@ -28,5 +28,10 @@ namespace Game.UI.Runtime.Abstractions
         /// 释放所有已加载的 UI 资源缓存。
         /// </summary>
         void ReleaseAll();
+
+        /// <summary>
+        /// 当前已缓存的 UI 资源 Key 列表（诊断用）。
+        /// </summary>
+        IReadOnlyCollection<string> CachedKeys { get; }
     }
 }

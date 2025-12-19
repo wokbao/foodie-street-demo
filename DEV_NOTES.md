@@ -7,6 +7,7 @@
 - ✅ Addressables 规划：统一 Key（`UI/ButtonPrimary`、`UI/ButtonSecondary`、`UI/Panel/Base`、`UI/Panel/Header`、`UI/Dialog/Confirm`、`UI/Dialog/Info`）
 - ✅ Quit 弹窗：修复隐藏状态下无法启动协程的问题，保证默认隐藏时也能正常弹出确认窗
 - ✅ 菜单接线：Settings 面板可开关（导航服务），Quit 按钮接入确认弹窗（退出/取消）
+- ✅ UI 工厂：统一 Addressable 加载/缓存，支持预加载、进度与诊断；主菜单屏幕通过工厂按需加载
 
 ### 下一步计划
 - [ ] Settings 功能填充：音量/语言等占位控件与数据流

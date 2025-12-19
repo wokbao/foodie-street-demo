@@ -18,6 +18,8 @@ namespace Game.UI.Runtime
         private readonly ILogService _logService;
         private readonly Dictionary<string, GameObject> _prefabCache = new Dictionary<string, GameObject>();
 
+        public IReadOnlyCollection<string> CachedKeys => _prefabCache.Keys;
+
         public UIFactory(IAssetProvider assetProvider, ILogService logService)
         {
             _assetProvider = assetProvider;
@@ -29,8 +31,9 @@ namespace Game.UI.Runtime
             return LoadPrefabAsync(key, ct);
         }
 
-        public async UniTask<GameObject> InstantiateAsync(string key, Transform parent = null, CancellationToken ct = default)
+        public async UniTask<GameObject> InstantiateAsync(string key, Transform parent = null, IProgress<float> progress = null, CancellationToken ct = default)
         {
+            progress?.Report(0f);
             var prefab = await LoadPrefabAsync(key, ct);
             if (prefab == null)
             {
@@ -40,6 +43,7 @@ namespace Game.UI.Runtime
 
             var instance = UnityEngine.Object.Instantiate(prefab, parent);
             instance.name = prefab.name;
+            progress?.Report(1f);
             return instance;
         }
 
@@ -54,7 +58,8 @@ namespace Game.UI.Runtime
 
         public void ReleaseAll()
         {
-            foreach (var key in _prefabCache.Keys)
+            var keys = new List<string>(_prefabCache.Keys);
+            foreach (var key in keys)
             {
                 _assetProvider.Release(key);
             }

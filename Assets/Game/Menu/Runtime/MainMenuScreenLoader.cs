@@ -57,7 +57,7 @@ namespace Game.Menu.Runtime
                 }
 
                 _logService?.Information(LogCategory.Menu, "[主菜单] 加载 UI 屏幕：{0}", AddressKey);
-                _instance = await _uiFactory.InstantiateAsync(AddressKey, canvas.transform, token);
+                _instance = await _uiFactory.InstantiateAsync(AddressKey, canvas.transform, null, token);
 
                 var view = _instance != null
                     ? _instance.GetComponentInChildren<MainMenuView>()

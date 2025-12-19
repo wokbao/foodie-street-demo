@@ -3,8 +3,6 @@ using Cysharp.Threading.Tasks;
 using Game.Menu.Runtime.Abstractions;
 using Game.UI.Runtime;
 using VContainer;
-using VContainer.Unity;
-using VContainer.Unity;
 
 namespace Game.Menu.Runtime
 {
