@@ -1,8 +1,10 @@
+using System;
 using Core.Feature.Logging.Abstractions;
 using Cysharp.Threading.Tasks;
 using Game.Menu.Runtime.Abstractions;
 using Game.UI.Runtime;
 using UnityEngine;
+using VContainer;
 
 namespace Game.Menu.Runtime
 {
@@ -14,10 +16,10 @@ namespace Game.Menu.Runtime
         private readonly ILogService _logService;
         private readonly UIConfirmDialog _dialog;
 
-        public DefaultQuitHandler(ILogService logService, UIConfirmDialog dialog)
+        public DefaultQuitHandler(ILogService logService, IObjectResolver resolver)
         {
             _logService = logService;
-            _dialog = dialog;
+            resolver.TryResolve(out _dialog);
         }
 
         public UniTask RequestQuitAsync()
@@ -52,4 +54,5 @@ namespace Game.Menu.Runtime
             return UniTask.CompletedTask;
         }
     }
+
 }

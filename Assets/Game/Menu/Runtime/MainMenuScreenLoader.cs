@@ -1,14 +1,13 @@
 using System;
 using System.Threading;
-using Core.Feature.AssetManagement.Abstractions;
 using Core.Feature.Logging.Abstractions;
 using Core.Feature.SceneManagement.Abstractions;
 using Core.Feature.Loading.Abstractions;
 using Cysharp.Threading.Tasks;
 using Game.Menu.Runtime.Abstractions;
+using Game.UI.Runtime.Abstractions;
 using Game.UI.Runtime;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using VContainer;
 using VContainer.Unity;
 
@@ -23,22 +22,21 @@ namespace Game.Menu.Runtime
         private const string AddressKey = "UI/Screens/MainMenu";
 
         private readonly IObjectResolver _resolver;
-        private readonly IAssetProvider _assetProvider;
+        private readonly IUIFactory _uiFactory;
         private readonly ILogService _logService;
 
         private GameObject _instance;
-        private AsyncOperationHandle<GameObject>? _handle;
         private MainMenuPresenter _presenter;
         private CancellationTokenSource _cts = new CancellationTokenSource();
 
         [Inject]
         public MainMenuScreenLoader(
             IObjectResolver resolver,
-            IAssetProvider assetProvider,
+            IUIFactory uiFactory,
             ILogService logService)
         {
             _resolver = resolver;
-            _assetProvider = assetProvider;
+            _uiFactory = uiFactory;
             _logService = logService;
         }
 
@@ -59,14 +57,11 @@ namespace Game.Menu.Runtime
                 }
 
                 _logService?.Information(LogCategory.Menu, "[主菜单] 加载 UI 屏幕：{0}", AddressKey);
-                var handle = _assetProvider.LoadAssetAsync<GameObject>(AddressKey);
-                _handle = handle;
-                var prefab = await handle.ToUniTask(token);
+                _instance = await _uiFactory.InstantiateAsync(AddressKey, canvas.transform, token);
 
-                _instance = UnityEngine.Object.Instantiate(prefab, canvas.transform);
-                _instance.name = "MainMenuScreen";
-
-                var view = _instance.GetComponentInChildren<MainMenuView>();
+                var view = _instance != null
+                    ? _instance.GetComponentInChildren<MainMenuView>()
+                    : null;
                 if (view == null)
                 {
                     _logService?.Error(LogCategory.Menu, "[主菜单] MainMenuView 未找到，无法装配 Presenter");
@@ -100,9 +95,12 @@ namespace Game.Menu.Runtime
 
         public void Dispose()
         {
-            _cts.Cancel();
-            _cts.Dispose();
-            _cts = null;
+            if (_cts != null)
+            {
+                _cts.Cancel();
+                _cts.Dispose();
+                _cts = null;
+            }
 
             _presenter?.Dispose();
             _presenter = null;
@@ -113,12 +111,7 @@ namespace Game.Menu.Runtime
                 _instance = null;
             }
 
-            if (_handle.HasValue)
-            {
-                _assetProvider.Release(_handle.Value);
-                _handle = null;
-            }
+            _uiFactory.Release(AddressKey);
         }
     }
 }
-

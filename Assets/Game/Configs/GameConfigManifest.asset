@@ -15,7 +15,7 @@ MonoBehaviour:
   _entries:
   - Name: LoadingHudConfig
     AddressableKey: Game/Configs/LoadingHudConfig
-    ConfigTypeName: Game.Runtime.Loading.LoadingHudConfig
+    ConfigTypeName: Game.Runtime.Loading.LoadingHudConfig, Game
     IsRequired: 1
     Priority: 0
     DevOnly: 0

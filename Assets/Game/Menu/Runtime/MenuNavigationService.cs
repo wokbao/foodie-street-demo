@@ -2,6 +2,9 @@ using Core.Feature.Logging.Abstractions;
 using Cysharp.Threading.Tasks;
 using Game.Menu.Runtime.Abstractions;
 using Game.UI.Runtime;
+using VContainer;
+using VContainer.Unity;
+using VContainer.Unity;
 
 namespace Game.Menu.Runtime
 {
@@ -12,11 +15,14 @@ namespace Game.Menu.Runtime
     {
         private readonly ILogService _logService;
         private readonly UIPanelWithHeader _settingsPanel;
+        private bool _isSettingsOpen;
 
-        public MenuNavigationService(ILogService logService, UIPanelWithHeader settingsPanel)
+        public MenuNavigationService(
+            ILogService logService,
+            IObjectResolver resolver)
         {
             _logService = logService;
-            _settingsPanel = settingsPanel;
+            resolver.TryResolve(out _settingsPanel);
 
             if (_settingsPanel != null)
             {
@@ -33,9 +39,16 @@ namespace Game.Menu.Runtime
                 return UniTask.CompletedTask;
             }
 
+            if (_isSettingsOpen)
+            {
+                _logService?.Information(LogCategory.Menu, "[菜单导航] 设置面板已打开，忽略重复请求");
+                return UniTask.CompletedTask;
+            }
+
             _logService?.Information(LogCategory.Menu, "[菜单导航] 打开设置页");
             _settingsPanel.SetTitle("设置");
             _settingsPanel.gameObject.SetActive(true);
+            _isSettingsOpen = true;
             return UniTask.CompletedTask;
         }
 
@@ -47,6 +60,7 @@ namespace Game.Menu.Runtime
             }
 
             _logService?.Information(LogCategory.Menu, "[菜单导航] 返回主菜单");
+            _isSettingsOpen = false;
             return UniTask.CompletedTask;
         }
 

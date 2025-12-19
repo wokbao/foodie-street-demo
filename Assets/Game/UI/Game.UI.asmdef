@@ -1,0 +1,22 @@
+{
+  "name": "Game.UI",
+  "rootNamespace": "Game.UI",
+  "references": [
+    "Core",
+    "Unity.Addressables",
+    "Unity.TextMeshPro",
+    "UnityEngine.UI",
+    "VContainer",
+    "UniTask",
+    "UniTask.Addressables"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
