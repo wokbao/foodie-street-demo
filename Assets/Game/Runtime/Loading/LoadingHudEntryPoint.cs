@@ -1,5 +1,6 @@
 using System;
 using Core.Feature.Loading.Abstractions;
+using Game.UI.Runtime;
 using UnityEngine;
 using UnityEngine.UI;
 using VContainer.Unity;
@@ -14,29 +15,29 @@ namespace Game.Runtime.Loading
     /// </summary>
     public sealed class LoadingHudEntryPoint : IStartable, IDisposable
     {
-        private const int DefaultSortingOrder = 8000;
-
         private readonly ILoadingService _loadingService;
         private readonly LoadingHudConfig _config;
+        private readonly UIHierarchyConfig _uiHierarchyConfig;
         private GameObject _hudObject;
         private GameObject _globalCanvasRoot;
-        private Canvas _globalCanvas;
+        private Canvas _loadingCanvas;
 
-        public LoadingHudEntryPoint(ILoadingService loadingService, LoadingHudConfig config = null)
+        public LoadingHudEntryPoint(ILoadingService loadingService, LoadingHudConfig config = null, UIHierarchyConfig uiHierarchyConfig = null)
         {
             _loadingService = loadingService;
             _config = config;
+            _uiHierarchyConfig = uiHierarchyConfig != null ? uiHierarchyConfig : UIHierarchyConfig.Default;
         }
 
         public void Start()
         {
-            EnsureGlobalCanvas();
+            EnsureLoadingCanvas();
 
             _hudObject = new GameObject("LoadingOverlay");
-            _hudObject.transform.SetParent(_globalCanvasRoot.transform, false);
+            _hudObject.transform.SetParent(_loadingCanvas.transform, false);
 
             var hud = _hudObject.AddComponent<LoadingHud>();
-            hud.Initialize(_loadingService, _config, _globalCanvas);
+            hud.Initialize(_loadingService, _config, _loadingCanvas);
         }
 
         public void Dispose()
@@ -47,70 +48,110 @@ namespace Game.Runtime.Loading
                 _hudObject = null;
             }
 
-            if (_globalCanvasRoot != null)
-            {
-                UnityEngine.Object.Destroy(_globalCanvasRoot);
-                _globalCanvasRoot = null;
-                _globalCanvas = null;
-            }
+            _globalCanvasRoot = null;
+            _loadingCanvas = null;
         }
 
-        private void EnsureGlobalCanvas()
+        private void EnsureLoadingCanvas()
         {
-            if (_globalCanvasRoot != null && _globalCanvas != null)
+            if (_globalCanvasRoot != null && _loadingCanvas != null)
             {
                 return;
             }
 
-            _globalCanvasRoot = GameObject.Find("GlobalUIRoot");
+            var rootName = string.IsNullOrWhiteSpace(_uiHierarchyConfig.RootName)
+                ? "GlobalUIRoot"
+                : _uiHierarchyConfig.RootName;
+
+            _globalCanvasRoot = GameObject.Find(rootName);
             if (_globalCanvasRoot == null)
             {
-                _globalCanvasRoot = new GameObject("GlobalUIRoot");
+                _globalCanvasRoot = new GameObject(rootName);
                 UnityEngine.Object.DontDestroyOnLoad(_globalCanvasRoot);
+            }
 
-                _globalCanvas = _globalCanvasRoot.AddComponent<Canvas>();
-                _globalCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                _globalCanvas.sortingOrder = _config != null ? _config.SortingOrder : DefaultSortingOrder;
+            // 确保根有 CanvasScaler，但根 Canvas 排序使用配置的 RootSortingOrder。
+            var rootCanvas = _globalCanvasRoot.GetComponent<Canvas>();
+            if (rootCanvas == null)
+            {
+                rootCanvas = _globalCanvasRoot.AddComponent<Canvas>();
+                rootCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                rootCanvas.sortingOrder = _uiHierarchyConfig.RootSortingOrder;
+            }
+            else
+            {
+                rootCanvas.sortingOrder = _uiHierarchyConfig.RootSortingOrder;
+            }
 
-                var scaler = _globalCanvasRoot.AddComponent<CanvasScaler>();
+            var scaler = _globalCanvasRoot.GetComponent<CanvasScaler>();
+            if (scaler == null)
+            {
+                scaler = _globalCanvasRoot.AddComponent<CanvasScaler>();
                 scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
                 scaler.referenceResolution = new Vector2(1920f, 1080f);
                 scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
                 scaler.matchWidthOrHeight = 0.5f;
+            }
 
+            if (_globalCanvasRoot.GetComponent<GraphicRaycaster>() == null)
+            {
                 _globalCanvasRoot.AddComponent<GraphicRaycaster>();
             }
-            else
+
+            // 统一创建/确保各 UI 层 Canvas（每层一个 Canvas 以便独立 sortingOrder；并复制 CanvasScaler 保持缩放一致）。
+            EnsureLayerCanvas(_globalCanvasRoot.transform, scaler, _uiHierarchyConfig.MainLayerName, _uiHierarchyConfig.MainSortingOrder);
+            EnsureLayerCanvas(_globalCanvasRoot.transform, scaler, _uiHierarchyConfig.HudLayerName, _uiHierarchyConfig.HudSortingOrder);
+            EnsureLayerCanvas(_globalCanvasRoot.transform, scaler, _uiHierarchyConfig.OverlayLayerName, _uiHierarchyConfig.OverlaySortingOrder);
+            EnsureLayerCanvas(_globalCanvasRoot.transform, scaler, _uiHierarchyConfig.TransitionLayerName, _uiHierarchyConfig.TransitionSortingOrder);
+
+            var loadingLayer = EnsureLayerCanvas(_globalCanvasRoot.transform, scaler, _uiHierarchyConfig.LoadingLayerName, _uiHierarchyConfig.LoadingSortingOrder);
+            _loadingCanvas = loadingLayer != null ? loadingLayer.GetComponent<Canvas>() : null;
+        }
+
+        private static GameObject EnsureLayerCanvas(Transform root, CanvasScaler rootScaler, string layerName, int sortingOrder)
+        {
+            var name = string.IsNullOrWhiteSpace(layerName) ? "Layer" : layerName;
+            var layer = FindOrCreateLayer(root, name);
+
+            var canvas = layer.GetComponent<Canvas>();
+            if (canvas == null)
             {
-                _globalCanvas = _globalCanvasRoot.GetComponent<Canvas>();
-                if (_globalCanvas == null)
-                {
-                    _globalCanvas = _globalCanvasRoot.AddComponent<Canvas>();
-                    _globalCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                    _globalCanvas.sortingOrder = _config != null ? _config.SortingOrder : DefaultSortingOrder;
-                }
-                else
-                {
-                    _globalCanvas.sortingOrder = _config != null ? _config.SortingOrder : DefaultSortingOrder;
-                }
-
-                var scaler = _globalCanvasRoot.GetComponent<CanvasScaler>();
-                if (scaler == null)
-                {
-                    scaler = _globalCanvasRoot.AddComponent<CanvasScaler>();
-                    scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-                    scaler.referenceResolution = new Vector2(1920f, 1080f);
-                    scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-                    scaler.matchWidthOrHeight = 0.5f;
-                }
-
-                if (_globalCanvasRoot.GetComponent<GraphicRaycaster>() == null)
-                {
-                    _globalCanvasRoot.AddComponent<GraphicRaycaster>();
-                }
-
-                UnityEngine.Object.DontDestroyOnLoad(_globalCanvasRoot);
+                canvas = layer.AddComponent<Canvas>();
             }
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = sortingOrder;
+
+            // 每层单独 Canvas 时也需要 CanvasScaler 才能与根节点保持一致缩放。
+            var scaler = layer.GetComponent<CanvasScaler>();
+            if (scaler == null && rootScaler != null)
+            {
+                scaler = layer.AddComponent<CanvasScaler>();
+                scaler.uiScaleMode = rootScaler.uiScaleMode;
+                scaler.referenceResolution = rootScaler.referenceResolution;
+                scaler.screenMatchMode = rootScaler.screenMatchMode;
+                scaler.matchWidthOrHeight = rootScaler.matchWidthOrHeight;
+            }
+
+            if (layer.GetComponent<GraphicRaycaster>() == null)
+            {
+                layer.AddComponent<GraphicRaycaster>();
+            }
+
+            return layer;
+        }
+
+        private static GameObject FindOrCreateLayer(Transform parent, string name)
+        {
+            var child = parent.Find(name);
+            if (child != null)
+            {
+                return child.gameObject;
+            }
+
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            return go;
         }
     }
 }

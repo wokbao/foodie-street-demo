@@ -10,9 +10,9 @@ namespace Game.Runtime.Loading
     /// </summary>
     public sealed class LoadingHud : MonoBehaviour
     {
+        private const int DefaultSortingOrder = 8000;
         // 默认值；可由 LoadingHudConfig 覆盖（建议放 Assets/Game/Configs/LoadingHudConfig.asset）。
         private float _showDelaySeconds = 2f;
-        private int _sortingOrder = 8000;
         private Color _overlayColor = new Color(0f, 0f, 0f, 0.55f);
         private Color _spinnerColor = new Color(1f, 1f, 1f, 0.9f);
 
@@ -34,7 +34,6 @@ namespace Game.Runtime.Loading
             if (config != null)
             {
                 _showDelaySeconds = config.ShowDelaySeconds;
-                _sortingOrder = config.SortingOrder;
                 _overlayColor = config.OverlayColor;
                 _spinnerColor = config.SpinnerColor;
             }
@@ -120,14 +119,13 @@ namespace Game.Runtime.Loading
 
             if (_usingExternalCanvas && _canvas != null)
             {
-                _canvas.sortingOrder = _sortingOrder;
                 parentTransform = _canvas.transform;
             }
             else
             {
                 _canvas = gameObject.AddComponent<Canvas>();
                 _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                _canvas.sortingOrder = _sortingOrder;
+                _canvas.sortingOrder = DefaultSortingOrder;
 
                 var scaler = gameObject.AddComponent<CanvasScaler>();
                 scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;

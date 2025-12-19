@@ -5,8 +5,8 @@ using Core.Feature.SceneManagement.Abstractions;
 using Core.Feature.Loading.Abstractions;
 using Cysharp.Threading.Tasks;
 using Game.Menu.Runtime.Abstractions;
-using Game.UI.Runtime.Abstractions;
 using Game.UI.Runtime;
+using Game.UI.Runtime.Abstractions;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -24,6 +24,7 @@ namespace Game.Menu.Runtime
         private readonly IObjectResolver _resolver;
         private readonly IUIFactory _uiFactory;
         private readonly ILogService _logService;
+        private readonly UIHierarchyConfig _uiHierarchyConfig;
 
         private GameObject _instance;
         private MainMenuPresenter _presenter;
@@ -33,11 +34,13 @@ namespace Game.Menu.Runtime
         public MainMenuScreenLoader(
             IObjectResolver resolver,
             IUIFactory uiFactory,
-            ILogService logService)
+            ILogService logService,
+            UIHierarchyConfig uiHierarchyConfig = null)
         {
             _resolver = resolver;
             _uiFactory = uiFactory;
             _logService = logService;
+            _uiHierarchyConfig = uiHierarchyConfig != null ? uiHierarchyConfig : UIHierarchyConfig.Default;
         }
 
         public void Start()
@@ -49,15 +52,15 @@ namespace Game.Menu.Runtime
         {
             try
             {
-                var canvas = UnityEngine.Object.FindObjectOfType<Canvas>();
-                if (canvas == null)
+                var parent = FindTargetLayer();
+                if (parent == null)
                 {
-                    _logService?.Error(LogCategory.Menu, "[主菜单] 场景中未找到 Canvas，无法实例化主菜单 UI");
+                    _logService?.Error(LogCategory.Menu, "[主菜单] 未找到 UI 根节点，无法实例化主菜单 UI");
                     return;
                 }
 
                 _logService?.Information(LogCategory.Menu, "[主菜单] 加载 UI 屏幕：{0}", AddressKey);
-                _instance = await _uiFactory.InstantiateAsync(AddressKey, canvas.transform, null, token);
+                _instance = await _uiFactory.InstantiateAsync(AddressKey, parent, null, token);
 
                 var view = _instance != null
                     ? _instance.GetComponentInChildren<MainMenuView>()
@@ -112,6 +115,33 @@ namespace Game.Menu.Runtime
             }
 
             _uiFactory.Release(AddressKey);
+        }
+
+        private Transform FindTargetLayer()
+        {
+            var rootName = string.IsNullOrWhiteSpace(_uiHierarchyConfig.RootName)
+                ? "GlobalUIRoot"
+                : _uiHierarchyConfig.RootName;
+
+            var root = GameObject.Find(rootName);
+            if (root == null)
+            {
+                return null;
+            }
+
+            var layerName = string.IsNullOrWhiteSpace(_uiHierarchyConfig.MainLayerName)
+                ? "Layer_Main"
+                : _uiHierarchyConfig.MainLayerName;
+
+            var layer = root.transform.Find(layerName);
+            if (layer == null)
+            {
+                var go = new GameObject(layerName);
+                layer = go.transform;
+                layer.SetParent(root.transform, false);
+            }
+
+            return layer;
         }
     }
 }

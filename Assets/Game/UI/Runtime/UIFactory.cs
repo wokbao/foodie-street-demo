@@ -51,8 +51,8 @@ namespace Game.UI.Runtime
         {
             if (_prefabCache.Remove(key))
             {
-                _assetProvider.Release(key);
-                _logService?.Information(LogCategory.Menu, $"[UIFactory] 释放 UI 资源：{key}");
+                TryReleaseSafely(key);
+                TryLogInfo($"[UIFactory] 释放 UI 资源：{key}");
             }
         }
 
@@ -61,11 +61,11 @@ namespace Game.UI.Runtime
             var keys = new List<string>(_prefabCache.Keys);
             foreach (var key in keys)
             {
-                _assetProvider.Release(key);
+                TryReleaseSafely(key);
             }
 
             _prefabCache.Clear();
-            _logService?.Information(LogCategory.Menu, "[UIFactory] 已释放所有 UI 资源缓存");
+            TryLogInfo("[UIFactory] 已释放所有 UI 资源缓存");
         }
 
         private async UniTask<GameObject> LoadPrefabAsync(string key, CancellationToken ct)
@@ -95,6 +95,34 @@ namespace Game.UI.Runtime
             {
                 _logService?.Error(LogCategory.Menu, $"[UIFactory] 加载失败：{key} - {ex.Message}", ex);
                 return null;
+            }
+        }
+
+        private void TryReleaseSafely(string key)
+        {
+            try
+            {
+                _assetProvider.Release(key);
+            }
+            catch (ObjectDisposedException)
+            {
+                // 容器/日志通道销毁阶段释放，忽略。
+            }
+            catch (Exception ex)
+            {
+                TryLogInfo($"[UIFactory] 释放 {key} 发生异常：{ex.Message}");
+            }
+        }
+
+        private void TryLogInfo(string message)
+        {
+            try
+            {
+                _logService?.Information(LogCategory.Menu, message);
+            }
+            catch (ObjectDisposedException)
+            {
+                // 容器销毁阶段日志通道可能已释放，忽略即可。
             }
         }
     }
