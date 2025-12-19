@@ -3,8 +3,6 @@ using Cysharp.Threading.Tasks;
 using Game.Menu.Runtime.Abstractions;
 using Game.UI.Runtime;
 using Game.UI.Runtime.Abstractions;
-using UnityEngine;
-using UnityEngine.UI;
 using VContainer;
 
 namespace Game.Menu.Runtime
@@ -16,7 +14,7 @@ namespace Game.Menu.Runtime
     {
         private readonly ILogService _logService;
         private readonly IUIFactory _uiFactory;
-        private readonly UIHierarchyConfig _uiHierarchyConfig;
+        private readonly IUIRootService _uiRootService;
 
         private UIPanelWithHeader _settingsPanel;
         private bool _isSettingsOpen;
@@ -25,11 +23,11 @@ namespace Game.Menu.Runtime
             ILogService logService,
             IObjectResolver resolver,
             IUIFactory uiFactory,
-            UIHierarchyConfig uiHierarchyConfig = null)
+            IUIRootService uiRootService)
         {
             _logService = logService;
             _uiFactory = uiFactory;
-            _uiHierarchyConfig = uiHierarchyConfig != null ? uiHierarchyConfig : UIHierarchyConfig.Default;
+            _uiRootService = uiRootService;
             resolver.TryResolve(out _settingsPanel);
 
             if (_settingsPanel != null)
@@ -108,7 +106,8 @@ namespace Game.Menu.Runtime
                 return;
             }
 
-            var parent = FindOverlayLayer();
+            _uiRootService.EnsureInitialized();
+            var parent = _uiRootService.GetLayer(UILayer.Overlay);
             if (parent == null)
             {
                 _logService?.Warning(LogCategory.Menu, "[菜单导航] 未找到 Overlay 层，无法实例化设置面板");
@@ -133,53 +132,5 @@ namespace Game.Menu.Runtime
             _settingsPanel.gameObject.SetActive(false);
             _settingsPanel.CloseRequested += OnCloseRequested;
         }
-
-        private Transform FindOverlayLayer()
-        {
-            var rootName = string.IsNullOrWhiteSpace(_uiHierarchyConfig.RootName)
-                ? "GlobalUIRoot"
-                : _uiHierarchyConfig.RootName;
-            var root = GameObject.Find(rootName);
-            if (root == null || root.Equals(null))
-            {
-                return null;
-            }
-
-            var layerName = string.IsNullOrWhiteSpace(_uiHierarchyConfig.OverlayLayerName)
-                ? "Layer_Overlay"
-                : _uiHierarchyConfig.OverlayLayerName;
-
-            var layer = FindOrCreateLayer(root.transform, layerName);
-            return IsDestroyed(layer) ? null : layer;
-        }
-
-        private static Transform FindOrCreateLayer(Transform parent, string name)
-        {
-            if (IsDestroyed(parent))
-            {
-                return null;
-            }
-
-            Transform layer;
-            try
-            {
-                layer = parent.Find(name);
-            }
-            catch (MissingReferenceException)
-            {
-                return null;
-            }
-
-            if (IsDestroyed(layer))
-            {
-                var go = new GameObject(name);
-                layer = go.transform;
-                layer.SetParent(parent, false);
-            }
-
-            return layer;
-        }
-
-        private static bool IsDestroyed(UnityEngine.Object obj) => obj == null || obj.Equals(null);
     }
 }

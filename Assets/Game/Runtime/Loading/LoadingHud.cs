@@ -6,7 +6,7 @@ namespace Game.Runtime.Loading
 {
     /// <summary>
     /// 简易加载 HUD（纯代码生成 UI），用于临时展示进度、描述和旋转动画。
-    /// 如需美术版样式，请将延迟、排序层级等改为可配置 ScriptableObject（推荐放 Assets/Game/Configs/ 下并打 Addressable），在 EntryPoint 注入。
+    /// 如需美术版样式，请将延迟、颜色等改为可配置 ScriptableObject（推荐放 Assets/Game/Configs/ 下并打 Addressable），在 EntryPoint 注入。
     /// </summary>
     public sealed class LoadingHud : MonoBehaviour
     {

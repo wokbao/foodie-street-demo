@@ -37,7 +37,7 @@ namespace Game.UI.Runtime
             var prefab = await LoadPrefabAsync(key, ct);
             if (prefab == null)
             {
-                _logService?.Error(LogCategory.Menu, $"[UIFactory] 预制体加载失败：{key}");
+                _logService?.Error(LogCategory.UI, $"[UIFactory] 预制体加载失败：{key}");
                 return null;
             }
 
@@ -81,19 +81,19 @@ namespace Game.UI.Runtime
                 if (prefab != null)
                 {
                     _prefabCache[key] = prefab;
-                    _logService?.Information(LogCategory.Menu, $"[UIFactory] 已加载并缓存：{key}");
+                    _logService?.Information(LogCategory.UI, $"[UIFactory] 已加载并缓存：{key}");
                 }
 
                 return prefab;
             }
             catch (OperationCanceledException)
             {
-                _logService?.Warning(LogCategory.Menu, $"[UIFactory] 预加载取消：{key}");
+                _logService?.Warning(LogCategory.UI, $"[UIFactory] 预加载取消：{key}");
                 return null;
             }
             catch (Exception ex)
             {
-                _logService?.Error(LogCategory.Menu, $"[UIFactory] 加载失败：{key} - {ex.Message}", ex);
+                _logService?.Error(LogCategory.UI, $"[UIFactory] 加载失败：{key} - {ex.Message}", ex);
                 return null;
             }
         }
@@ -118,7 +118,7 @@ namespace Game.UI.Runtime
         {
             try
             {
-                _logService?.Information(LogCategory.Menu, message);
+                _logService?.Information(LogCategory.UI, message);
             }
             catch (ObjectDisposedException)
             {

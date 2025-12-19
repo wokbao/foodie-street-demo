@@ -19,12 +19,12 @@ namespace Game.Menu.Runtime
     /// </summary>
     public sealed class MainMenuScreenLoader : IStartable, IDisposable
     {
-        private const string AddressKey = "UI/Screens/MainMenu";
+        private const string AddressKey = UIKeys.Screens.MainMenu;
 
         private readonly IObjectResolver _resolver;
         private readonly IUIFactory _uiFactory;
+        private readonly IUIRootService _uiRootService;
         private readonly ILogService _logService;
-        private readonly UIHierarchyConfig _uiHierarchyConfig;
 
         private GameObject _instance;
         private MainMenuPresenter _presenter;
@@ -34,13 +34,13 @@ namespace Game.Menu.Runtime
         public MainMenuScreenLoader(
             IObjectResolver resolver,
             IUIFactory uiFactory,
-            ILogService logService,
-            UIHierarchyConfig uiHierarchyConfig = null)
+            IUIRootService uiRootService,
+            ILogService logService)
         {
             _resolver = resolver;
             _uiFactory = uiFactory;
+            _uiRootService = uiRootService;
             _logService = logService;
-            _uiHierarchyConfig = uiHierarchyConfig != null ? uiHierarchyConfig : UIHierarchyConfig.Default;
         }
 
         public void Start()
@@ -119,29 +119,8 @@ namespace Game.Menu.Runtime
 
         private Transform FindTargetLayer()
         {
-            var rootName = string.IsNullOrWhiteSpace(_uiHierarchyConfig.RootName)
-                ? "GlobalUIRoot"
-                : _uiHierarchyConfig.RootName;
-
-            var root = GameObject.Find(rootName);
-            if (root == null)
-            {
-                return null;
-            }
-
-            var layerName = string.IsNullOrWhiteSpace(_uiHierarchyConfig.MainLayerName)
-                ? "Layer_Main"
-                : _uiHierarchyConfig.MainLayerName;
-
-            var layer = root.transform.Find(layerName);
-            if (layer == null)
-            {
-                var go = new GameObject(layerName);
-                layer = go.transform;
-                layer.SetParent(root.transform, false);
-            }
-
-            return layer;
+            _uiRootService.EnsureInitialized();
+            return _uiRootService.GetLayer(UILayer.Main);
         }
     }
 }

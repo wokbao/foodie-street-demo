@@ -1,6 +1,8 @@
 using Core.Runtime.Configuration;
 using Game.Runtime.Configs;
 using Game.Runtime.Loading;
+using Game.UI.Runtime;
+using Game.UI.Runtime.Abstractions;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -59,6 +61,9 @@ namespace Game.Runtime
                 ConfigRegistry.RegisterToContainer(builder, gameConfigResult);
             }
 
+            builder.Register<IUIRootService, UIRootService>(Lifetime.Singleton);
+            builder.Register<IUIFactory, UIFactory>(Lifetime.Singleton);
+            builder.RegisterEntryPoint<UIRootEntryPoint>(Lifetime.Singleton);
             builder.RegisterEntryPoint<LoadingHudEntryPoint>(Lifetime.Singleton);
 
             // （当前为空，待实现其他游戏域服务）
