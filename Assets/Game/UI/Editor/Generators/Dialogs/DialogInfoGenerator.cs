@@ -38,9 +38,9 @@ namespace Game.UI.Editor.Generators.Dialogs
             animatorRect.offsetMax = Vector2.zero;
 
             var canvasGroup = animatorRoot.GetComponent<CanvasGroup>();
-            canvasGroup.alpha = 0f;
-            canvasGroup.blocksRaycasts = false;
-            canvasGroup.interactable = false;
+            canvasGroup.alpha = 1f;
+            canvasGroup.blocksRaycasts = true;
+            canvasGroup.interactable = true;
 
             var overlayObj = new GameObject("Overlay", typeof(RectTransform), typeof(Image));
             overlayObj.transform.SetParent(animatorRoot.transform, false);
@@ -85,11 +85,8 @@ namespace Game.UI.Editor.Generators.Dialogs
             okRect.sizeDelta = new Vector2(320f, 88f);
             okRect.anchoredPosition = new Vector2(0f, 32f);
 
-            var animator = animatorRoot.AddComponent<UIDialogAnimator>();
-            animator.EditorWireUp(canvasGroup, panelRect);
-
             var dialog = root.AddComponent<UIInfoDialog>();
-            dialog.EditorWireUp(animator, message, okButton.GetComponent<Button>());
+            dialog.EditorWireUp(message, okButton.GetComponent<Button>());
 
             UIGeneratorUtility.SavePrefab(path, root);
             UIGeneratorUtility.MarkAddressable(path, UIKeys.Common.DialogInfo);

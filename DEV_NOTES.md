@@ -1,5 +1,27 @@
 # 🍪 Foodie Street 开发日志
 
+## 2025-12-22 (周日)
+
+### 完成的工作
+- ✅ **UI 对象池集成**：`UIFactory` 使用 `IObjectPoolManager` 复用 UI 实例，减少 GC
+- ✅ **UI 预加载**：`UIPreloader` 在启动时预加载常用 UI（确认弹窗、设置面板等）
+- ✅ **UI 动画系统**：`UIAnimator` 实现淡入淡出 + 缩放动画，集成到 `ShowDialogAsync`
+- ✅ **UIKeys 验证工具**：Editor 菜单工具检查 UIKeys 与 Addressables 对应关系
+- ✅ **IUICloseable 自动关闭机制**：
+  - 创建 `IUICloseable` 接口
+  - `UIConfirmDialog` / `UIPanelWithHeader` 实现接口
+  - `UIFactory.ShowDialogAsync` 自动订阅 `CloseRequested` 事件
+  - 业务层（`DefaultQuitHandler`、`MenuNavigationService`）移除 `IUIStackManager` 依赖
+- ✅ **清理旧代码**：移除 `UIDialogAnimator`，更新所有引用
+
+### 架构改进
+- 弹窗组件只需实现 `IUICloseable`，框架自动处理关闭流程
+- 调用方不需要知道 `IUIStackManager`，只关注业务逻辑
+
+### 下一步计划
+- [ ] 处理 lint 警告（命名空间等）
+- [ ] Settings 功能填充：音量/语言等占位控件
+
 ## 2025-12-15 (周一)
 
 ### 完成的工作

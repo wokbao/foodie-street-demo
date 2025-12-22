@@ -1,4 +1,5 @@
 using System;
+using Game.UI.Runtime.Abstractions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,15 +7,18 @@ using UnityEngine.UI;
 namespace Game.UI.Runtime
 {
     /// <summary>
-    /// 通用单按钮提示弹窗，使用 UIDialogAnimator 提供动画。
+    /// 通用单按钮提示弹窗。
+    /// 实现 IUICloseable，按钮点击后自动触发关闭事件。
     /// </summary>
-    public sealed class UIInfoDialog : MonoBehaviour
+    public sealed class UIInfoDialog : MonoBehaviour, IUICloseable
     {
-        [SerializeField] private UIDialogAnimator _animator;
         [SerializeField] private TextMeshProUGUI _message;
         [SerializeField] private Button _okButton;
 
         private Action _onOk;
+
+        /// <inheritdoc/>
+        public event Action CloseRequested;
 
         private void Awake()
         {
@@ -22,8 +26,6 @@ namespace Game.UI.Runtime
             {
                 _okButton.onClick.AddListener(OnOkClicked);
             }
-
-            _animator?.HideInstant();
         }
 
         private void OnDestroy()
@@ -31,6 +33,11 @@ namespace Game.UI.Runtime
             _okButton?.onClick.RemoveAllListeners();
         }
 
+        /// <summary>
+        /// 显示提示弹窗。
+        /// </summary>
+        /// <param name="message">提示消息</param>
+        /// <param name="onOk">确认回调（可选）</param>
         public void Show(string message, Action onOk = null)
         {
             _onOk = onOk;
@@ -39,28 +46,23 @@ namespace Game.UI.Runtime
             {
                 _message.text = message;
             }
-
-            _animator?.Show();
-        }
-
-        public void Close()
-        {
-            _animator?.Hide();
         }
 
         private void OnOkClicked()
         {
             _onOk?.Invoke();
-            Close();
+            // 触发关闭请求，由 UIFactory 处理实际关闭流程
+            CloseRequested?.Invoke();
         }
 
 #if UNITY_EDITOR
-        public void EditorWireUp(UIDialogAnimator animator, TextMeshProUGUI message, Button okButton)
+        public void EditorWireUp(TextMeshProUGUI message, Button okButton)
         {
-            _animator = animator;
             _message = message;
             _okButton = okButton;
         }
 #endif
     }
 }
+
+

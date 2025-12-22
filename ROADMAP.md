@@ -179,9 +179,9 @@
 - [x] 预制化通用弹窗/面板（UGUI+TMP），统一样式/动画（遮罩、渐隐/位移）
 - [x] Settings/Quit 弹窗接入 `IMenuNavigationService` / `IQuitHandler`，复用统一 UI 资产
 - [ ] UI 目录规范化：`Common/` 基础件、`Screens/MainMenu/` 组合件、`Styles/` 主题/字体/色板、`Fonts/` 字体资产
-- [ ] UI 工厂 + Addressables 按需实例化（弹窗/设置等从 Addressables 加载，带释放/缓存策略）
-- [ ] 导航栈/状态管理：防重复打开，支持 Push/Pop、Overlay 弹窗
-- [ ] 统一进出场动画参数：淡入+缩放+遮罩渐隐，配置化（SO/常量）
+- [x] UI 工厂 + Addressables 按需实例化（弹窗/设置等从 Addressables 加载，带释放/缓存策略）
+- [x] 导航栈/状态管理：防重复打开，支持 Push/Pop、Overlay 弹窗
+- [x] 统一进出场动画参数：淡入+缩放+遮罩渐隐，配置化（SO/常量）
 - [ ] 输入/适配：键盘/手柄导航、Esc/取消关闭、Safe Area、对比度/字体可读性检查
 - [ ] 设置数据流：接入配置服务（音量/语言等），提供持久化接口（可先 stub）
 - [ ] Addressables 打包策略：CommonUI/Screens 暂时 Pack Together，后续按改动频次拆分优化
@@ -344,5 +344,5 @@
 
 ---
 
-**最后更新**：2025-12-15  
+**最后更新**：2025-12-22  
 **当前版本**：v0.1.0-dev

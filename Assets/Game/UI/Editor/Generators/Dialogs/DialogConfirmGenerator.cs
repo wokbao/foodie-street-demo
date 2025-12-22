@@ -40,9 +40,9 @@ namespace Game.UI.Editor.Generators.Dialogs
             animatorRect.offsetMax = Vector2.zero;
 
             var canvasGroup = animatorRoot.GetComponent<CanvasGroup>();
-            canvasGroup.alpha = 0f;
-            canvasGroup.blocksRaycasts = false;
-            canvasGroup.interactable = false;
+            canvasGroup.alpha = 1f;
+            canvasGroup.blocksRaycasts = true;
+            canvasGroup.interactable = true;
 
             // 遮罩
             var overlayObj = new GameObject("Overlay", typeof(RectTransform), typeof(Image));
@@ -105,13 +105,9 @@ namespace Game.UI.Editor.Generators.Dialogs
             var confirmButton = CreateButton("ConfirmButton", "确认", false);
             confirmButton.transform.SetParent(buttonRow.transform, false);
 
-            // 添加动画器组件
-            var animator = animatorRoot.AddComponent<UIDialogAnimator>();
-            animator.EditorWireUp(canvasGroup, panelRect);
-
             // 添加 Dialog 组件
             var dialog = root.AddComponent<UIConfirmDialog>();
-            dialog.EditorWireUp(animator, message, confirmButton.GetComponent<Button>(), cancelButton.GetComponent<Button>());
+            dialog.EditorWireUp(message, confirmButton.GetComponent<Button>(), cancelButton.GetComponent<Button>());
 
             UIGeneratorUtility.SavePrefab(path, root);
             UIGeneratorUtility.MarkAddressable(path, UIKeys.Common.DialogConfirm);

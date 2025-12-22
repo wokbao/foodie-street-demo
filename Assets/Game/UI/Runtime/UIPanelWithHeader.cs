@@ -1,4 +1,5 @@
 using System;
+using Game.UI.Runtime.Abstractions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,13 +8,15 @@ namespace Game.UI.Runtime
 {
     /// <summary>
     /// 带标题栏和关闭按钮的通用面板骨架，用作 Settings 等界面的容器。
+    /// 实现 IUICloseable，关闭按钮点击后自动触发关闭事件。
     /// </summary>
-    public sealed class UIPanelWithHeader : MonoBehaviour
+    public sealed class UIPanelWithHeader : MonoBehaviour, IUICloseable
     {
         [SerializeField] private TextMeshProUGUI _title;
         [SerializeField] private Button _closeButton;
         [SerializeField] private RectTransform _contentRoot;
 
+        /// <inheritdoc/>
         public event Action CloseRequested;
 
         public RectTransform ContentRoot => _contentRoot;

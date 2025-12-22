@@ -13,3 +13,10 @@ dotnet_naming_symbols.private_instance_fields.applicable_accessibilities = priva
 
 dotnet_naming_style.private_instance_fields_style.capitalization = camel_case
 dotnet_naming_style.private_instance_fields_style.required_prefix = _
+
+#### ReSharper rules ####
+
+# 禁用命名空间与文件路径一致性检查（项目约定：命名空间从 Assets/ 下一级开始）
+resharper_csharp_inconsistent_naming = none
+resharper_check_namespace = false
+

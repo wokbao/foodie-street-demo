@@ -27,6 +27,21 @@ namespace Game.UI.Runtime.Abstractions
         void Release(string key);
 
         /// <summary>
+        /// 加载并显示弹窗/面板，自动加入 UI 堆栈（支持 ESC 关闭）。
+        /// </summary>
+        /// <param name="key">Addressable Key</param>
+        /// <param name="parent">父节点</param>
+        /// <param name="onClose">关闭时回调（可选）</param>
+        /// <param name="ct">取消令牌</param>
+        /// <returns>实例化的 UI 对象</returns>
+        UniTask<GameObject> ShowDialogAsync(string key, Transform parent = null, Action onClose = null, CancellationToken ct = default);
+
+        /// <summary>
+        /// 将 UI 实例归还对象池（隐藏而非销毁）
+        /// </summary>
+        void ReturnToPool(GameObject instance);
+
+        /// <summary>
         /// 释放所有已加载的 UI 资源缓存。
         /// </summary>
         void ReleaseAll();

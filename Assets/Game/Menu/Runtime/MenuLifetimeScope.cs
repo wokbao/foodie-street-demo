@@ -11,8 +11,11 @@ namespace Game.Menu.Runtime
     {
         protected override void Configure(IContainerBuilder builder)
         {
-            builder.Register<IMenuNavigationService, MenuNavigationService>(Lifetime.Scoped);
-            builder.Register<IQuitHandler, DefaultQuitHandler>(Lifetime.Scoped);
+            builder.Register<MenuNavigationService>(Lifetime.Scoped)
+                .As<IMenuNavigationService>();
+
+            builder.Register<DefaultQuitHandler>(Lifetime.Scoped)
+                .As<IQuitHandler>();
 
             builder.RegisterEntryPoint<MainMenuScreenLoader>(Lifetime.Scoped);
         }

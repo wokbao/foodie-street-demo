@@ -38,9 +38,9 @@ namespace Game.UI.Editor.Generators.Dialogs
             animatorRect.offsetMax = Vector2.zero;
 
             var canvasGroup = animatorRoot.GetComponent<CanvasGroup>();
-            canvasGroup.alpha = 0f;
-            canvasGroup.blocksRaycasts = false;
-            canvasGroup.interactable = false;
+            canvasGroup.alpha = 1f;
+            canvasGroup.blocksRaycasts = true;
+            canvasGroup.interactable = true;
 
             var overlayObj = new GameObject("Overlay", typeof(RectTransform), typeof(Image));
             overlayObj.transform.SetParent(animatorRoot.transform, false);
@@ -139,9 +139,6 @@ namespace Game.UI.Editor.Generators.Dialogs
 
             var confirmButton = CreateButton("ConfirmButton", "确认", false);
             confirmButton.transform.SetParent(buttonRow.transform, false);
-
-            var animator = animatorRoot.AddComponent<UIDialogAnimator>();
-            animator.EditorWireUp(canvasGroup, panelRect);
 
             // Note: 需要自定义 UIInputDialog 组件来处理逻辑
             // 这里仅生成基础结构

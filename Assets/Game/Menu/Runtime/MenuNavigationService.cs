@@ -3,7 +3,7 @@ using Cysharp.Threading.Tasks;
 using Game.Menu.Runtime.Abstractions;
 using Game.UI.Runtime;
 using Game.UI.Runtime.Abstractions;
-using VContainer;
+using UnityEngine;
 
 namespace Game.Menu.Runtime
 {
@@ -17,24 +17,17 @@ namespace Game.Menu.Runtime
         private readonly IUIRootService _uiRootService;
 
         private UIPanelWithHeader _settingsPanel;
+        private GameObject _settingsPanelInstance;
         private bool _isSettingsOpen;
 
         public MenuNavigationService(
             ILogService logService,
-            IObjectResolver resolver,
             IUIFactory uiFactory,
             IUIRootService uiRootService)
         {
             _logService = logService;
             _uiFactory = uiFactory;
             _uiRootService = uiRootService;
-            resolver.TryResolve(out _settingsPanel);
-
-            if (_settingsPanel != null)
-            {
-                _settingsPanel.gameObject.SetActive(false);
-                _settingsPanel.CloseRequested += OnCloseRequested;
-            }
         }
 
         public bool IsSettingsOpen => _isSettingsOpen;
@@ -43,66 +36,13 @@ namespace Game.Menu.Runtime
         {
             if (_isSettingsOpen)
             {
-                _logService?.Information(LogCategory.Menu, "[菜单导航] 设置面板已打开，忽略重复请求");
-                return;
-            }
-
-            if (_settingsPanel == null)
-            {
-                await EnsureSettingsPanelLoadedAsync();
-            }
-
-            if (_settingsPanel == null)
-            {
-                _logService?.Warning(LogCategory.Menu, "[菜单导航] 未找到设置面板");
-                return;
-            }
-
-            _logService?.Information(LogCategory.Menu, "[菜单导航] 打开设置页");
-            _settingsPanel.SetTitle("设置");
-            _settingsPanel.gameObject.SetActive(true);
-            _isSettingsOpen = true;
-        }
-
-        public UniTask ShowMainMenuAsync()
-        {
-            if (_settingsPanel != null)
-            {
-                _settingsPanel.gameObject.SetActive(false);
-            }
-
-            _logService?.Information(LogCategory.Menu, "[菜单导航] 返回主菜单");
-            _isSettingsOpen = false;
-            return UniTask.CompletedTask;
-        }
-
-        public bool TryHandleBack()
-        {
-            if (_isSettingsOpen)
-            {
-                _logService?.Information(LogCategory.Menu, "[菜单导航] 处理返回，关闭设置面板");
-                ShowMainMenuAsync().Forget();
-                return true;
-            }
-
-            return false;
-        }
-
-        private void OnCloseRequested()
-        {
-            ShowMainMenuAsync().Forget();
-        }
-
-        private async UniTask EnsureSettingsPanelLoadedAsync()
-        {
-            if (_settingsPanel != null)
-            {
+                _logService?.Information(LogCategory.Menu, "设置面板已打开，忽略重复请求");
                 return;
             }
 
             if (_uiFactory == null)
             {
-                _logService?.Warning(LogCategory.Menu, "[菜单导航] UIFactory 未注册，无法实例化设置面板");
+                _logService?.Warning(LogCategory.Menu, "UIFactory 未注册，无法打开设置面板");
                 return;
             }
 
@@ -110,27 +50,60 @@ namespace Game.Menu.Runtime
             var parent = _uiRootService.GetLayer(UILayer.Overlay);
             if (parent == null)
             {
-                _logService?.Warning(LogCategory.Menu, "[菜单导航] 未找到 Overlay 层，无法实例化设置面板");
+                _logService?.Warning(LogCategory.Menu, "未找到 Overlay 层，无法打开设置面板");
                 return;
             }
 
-            var instance = await _uiFactory.InstantiateAsync(UIKeys.Common.PanelHeader, parent);
-            if (instance == null)
+            _logService?.Information(LogCategory.Menu, "打开设置页");
+            _isSettingsOpen = true;
+
+            // 使用 ShowDialogAsync 自动管理堆栈（ESC 和关闭按钮都会自动关闭）
+            _settingsPanelInstance = await _uiFactory.ShowDialogAsync(
+                UIKeys.Common.PanelHeader,
+                parent,
+                onClose: () =>
+                {
+                    _logService?.Debug(LogCategory.Menu, "设置面板已关闭");
+                    _isSettingsOpen = false;
+                    _settingsPanel = null;
+                    _settingsPanelInstance = null;
+                });
+
+            if (_settingsPanelInstance == null)
             {
-                _logService?.Warning(LogCategory.Menu, "[菜单导航] 实例化设置面板失败，Key={0}", UIKeys.Common.PanelHeader);
+                _logService?.Warning(LogCategory.Menu, "实例化设置面板失败");
+                _isSettingsOpen = false;
                 return;
             }
 
-            _settingsPanel = instance.GetComponentInChildren<UIPanelWithHeader>(true);
+            _settingsPanel = _settingsPanelInstance.GetComponentInChildren<UIPanelWithHeader>(true);
             if (_settingsPanel == null)
             {
-                _logService?.Warning(LogCategory.Menu, "[菜单导航] 预制体上未找到 UIPanelWithHeader");
-                UnityEngine.Object.Destroy(instance);
+                _logService?.Warning(LogCategory.Menu, "预制体上未找到 UIPanelWithHeader");
+                _isSettingsOpen = false;
+                Object.Destroy(_settingsPanelInstance);
+                _settingsPanelInstance = null;
                 return;
             }
 
-            _settingsPanel.gameObject.SetActive(false);
-            _settingsPanel.CloseRequested += OnCloseRequested;
+            _settingsPanel.SetTitle("设置");
+            // 不需要手动订阅 CloseRequested，UIFactory 会自动处理
+        }
+
+        public UniTask ShowMainMenuAsync()
+        {
+            _logService?.Information(LogCategory.Menu, "返回主菜单");
+            _isSettingsOpen = false;
+            return UniTask.CompletedTask;
+        }
+
+        public bool TryHandleBack()
+        {
+            // 由 UIStackManager 统一处理返回键
+            return false;
         }
     }
 }
+
+
+

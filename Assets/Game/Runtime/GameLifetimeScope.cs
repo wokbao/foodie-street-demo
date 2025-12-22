@@ -65,8 +65,14 @@ namespace Game.Runtime
                 .As<IUIRootService>();
             builder.Register<UIFactory>(Lifetime.Singleton)
                 .As<IUIFactory>();
+            builder.Register<UIStackManager>(Lifetime.Singleton)
+                .As<IUIStackManager>()
+                .As<ITickable>();
             builder.RegisterEntryPoint<UIRootEntryPoint>(Lifetime.Singleton);
             builder.RegisterEntryPoint<LoadingHudEntryPoint>(Lifetime.Singleton);
+            builder.RegisterEntryPoint<UIPreloader>(Lifetime.Singleton);
+            builder.Register<UIAnimator>(Lifetime.Singleton)
+                .As<IUIAnimator>();
 
             // （当前为空，待实现其他游戏域服务）
 

@@ -144,7 +144,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8165336616745172338}
   - component: {fileID: 2801483719797498277}
-  - component: {fileID: 6046729742124275147}
   m_Layer: 0
   m_Name: Animator
   m_TagString: Untagged
@@ -181,26 +180,10 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4005455636267333158}
   m_Enabled: 1
-  m_Alpha: 0
-  m_Interactable: 0
-  m_BlocksRaycasts: 0
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &6046729742124275147
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4005455636267333158}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e27365dc668b9843be8dd5d5551eb4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _canvasGroup: {fileID: 2801483719797498277}
-  _panel: {fileID: 4869783535627607715}
-  _fadeSeconds: 0.35
-  _scaleFrom: 0.85
 --- !u!1 &4729887809674708247
 GameObject:
   m_ObjectHideFlags: 0
@@ -384,7 +367,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f5441d74d8b8e34ea8afb3e771dbb86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _animator: {fileID: 6046729742124275147}
   _message: {fileID: 3455206060007136200}
   _okButton: {fileID: 7666027726294723845}
 --- !u!1 &5915625843293390240

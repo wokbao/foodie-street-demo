@@ -137,6 +137,16 @@ git submodule status
   private int _currentLevel;
   ```
 
+- **命名空间**：从 `Assets/` 下一级开始（已禁用 ReSharper 命名空间检查）
+  ```csharp
+  // 文件路径: Assets/Game/UI/Runtime/UIFactory.cs
+  // 命名空间: Game.UI.Runtime（而非 Game.UI.Assets.Game.UI.Runtime）
+  namespace Game.UI.Runtime
+  {
+      public class UIFactory { }
+  }
+  ```
+
 ### VContainer 依赖注入规范
 统一使用链式注册：
 ```csharp
