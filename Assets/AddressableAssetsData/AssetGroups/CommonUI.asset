@@ -17,6 +17,12 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 105c06ffe4837c04c8a7f23a8a4bec35
   m_SerializeEntries:
+  - m_GUID: 1f5762e3c6dd66d4381f6d63d4ee2a69
+    m_Address: UI/Input/Toggle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - UI
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 26f213f3b8e465e4f922ab5ed0575e7b
     m_Address: UI/ButtonPrimary
     m_ReadOnly: 0
@@ -25,6 +31,30 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 27258909d34597e489e61a9e2a71660d
     m_Address: UI/ButtonSecondary
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - UI
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 401a53fe29fdbcb40b128f3a25cc1bfe
+    m_Address: UI/ButtonIcon
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - UI
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 40e01875cc24796429e8a8465aa0d86f
+    m_Address: UI/Layout/ScrollView
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - UI
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 480d945974f7d61418f928e161782e24
+    m_Address: UI/Input/Field
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - UI
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6abd3a670cedab542ac12a8cb1b05b8f
+    m_Address: UI/ButtonText
     m_ReadOnly: 0
     m_SerializedLabels:
     - UI
@@ -41,8 +71,62 @@ MonoBehaviour:
     m_SerializedLabels:
     - UI
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9d045a7896f53884aa716453bd0e0d06
+    m_Address: UI/Display/ProgressBar
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - UI
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9f18fcc1dc5afdb49a03570d51b23394
     m_Address: UI/Panel/Header
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - UI
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a6068aa8a9ef58446a818bac02e77675
+    m_Address: UI/Panel/Card
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - UI
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ab53ed1842820e24088e75642bbbc22c
+    m_Address: UI/Input/Slider
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - UI
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ada9f9af9ccf6884b8c0c6ce301ab507
+    m_Address: UI/Dialog/Input
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - UI
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bb510386982c9434186ab609fbd55859
+    m_Address: UI/Input/Dropdown
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - UI
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bf690c4a94c66f2438622b982ae7395a
+    m_Address: UI/Layout/Divider
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - UI
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c5b4c3f8a77269f4399683b1e98e6d8c
+    m_Address: UI/ButtonClose
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - UI
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d7c221e85054da042ab7939402dc2c93
+    m_Address: UI/Display/ImageFrame
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - UI
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e37bb63c49eb42d448a9a2da65ff3b7f
+    m_Address: UI/Display/Label
     m_ReadOnly: 0
     m_SerializedLabels:
     - UI

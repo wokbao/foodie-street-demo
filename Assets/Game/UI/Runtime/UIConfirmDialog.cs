@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,21 +6,15 @@ using UnityEngine.UI;
 namespace Game.UI.Runtime
 {
     /// <summary>
-    /// 通用确认弹窗：遮罩 + 面板 + 确认/取消按钮，内置淡入淡出与缩放动画。
+    /// 通用确认弹窗：遮罩 + 面板 + 确认/取消按钮，使用 UIDialogAnimator 提供动画。
     /// </summary>
     public sealed class UIConfirmDialog : MonoBehaviour
     {
-        [SerializeField] private CanvasGroup _canvasGroup;
-        [SerializeField] private RectTransform _panel;
+        [SerializeField] private UIDialogAnimator _animator;
         [SerializeField] private TextMeshProUGUI _message;
         [SerializeField] private Button _confirmButton;
         [SerializeField] private Button _cancelButton;
 
-        [Header("Animation")]
-        [SerializeField] private float _fadeSeconds = 0.12f;
-        [SerializeField] private float _scaleFrom = 0.96f;
-
-        private Coroutine _routine;
         private Action _onConfirm;
         private Action _onCancel;
 
@@ -37,7 +30,7 @@ namespace Game.UI.Runtime
                 _cancelButton.onClick.AddListener(OnCancelClicked);
             }
 
-            SetVisible(false, instant: true);
+            _animator?.HideInstant();
         }
 
         private void OnDestroy()
@@ -56,12 +49,12 @@ namespace Game.UI.Runtime
                 _message.text = message;
             }
 
-            SetVisible(true, instant: false);
+            _animator?.Show();
         }
 
         public void Close()
         {
-            SetVisible(false, instant: false);
+            _animator?.Hide();
         }
 
         private void OnConfirmClicked()
@@ -76,81 +69,10 @@ namespace Game.UI.Runtime
             Close();
         }
 
-        private void SetVisible(bool visible, bool instant)
-        {
-            if (_routine != null)
-            {
-                StopCoroutine(_routine);
-                _routine = null;
-            }
-
-            if (visible && !gameObject.activeSelf)
-            {
-                gameObject.SetActive(true);
-            }
-
-            // 如果脚本还未启用或对象仍未激活，直接同步状态，避免协程报错。
-            if (!isActiveAndEnabled)
-            {
-                ApplyState(visible, 1f);
-                return;
-            }
-
-            if (instant)
-            {
-                ApplyState(visible, 1f);
-                return;
-            }
-
-            _routine = StartCoroutine(AnimateVisible(visible));
-        }
-
-        private IEnumerator AnimateVisible(bool visible)
-        {
-            ApplyState(visible, 0f);
-
-            var duration = Mathf.Max(0.01f, _fadeSeconds);
-            var t = 0f;
-
-            while (t < 1f)
-            {
-                t += Time.unscaledDeltaTime / duration;
-                ApplyState(visible, Mathf.Clamp01(t));
-                yield return null;
-            }
-
-            ApplyState(visible, 1f);
-            _routine = null;
-        }
-
-        private void ApplyState(bool visible, float progress)
-        {
-            if (_canvasGroup == null)
-            {
-                return;
-            }
-
-            var alpha = visible ? progress : (1f - progress);
-            _canvasGroup.alpha = alpha;
-            _canvasGroup.blocksRaycasts = visible && alpha > 0.99f;
-            _canvasGroup.interactable = visible && alpha > 0.99f;
-
-            if (_panel != null)
-            {
-                var from = Vector3.one * _scaleFrom;
-                _panel.localScale = visible
-                    ? Vector3.Lerp(from, Vector3.one, progress)
-                    : Vector3.Lerp(Vector3.one, from, progress);
-            }
-
-            gameObject.SetActive(visible || alpha > 0.001f);
-        }
-
 #if UNITY_EDITOR
-        public void EditorWireUp(CanvasGroup canvasGroup, RectTransform panel, TextMeshProUGUI message, Button confirmButton, Button cancelButton)
+        public void EditorWireUp(UIDialogAnimator animator, TextMeshProUGUI message, Button confirmButton, Button cancelButton)
         {
-            _canvasGroup = canvasGroup;
-            _panel = panel;
+            _animator = animator;
             _message = message;
             _confirmButton = confirmButton;
             _cancelButton = cancelButton;

@@ -61,8 +61,10 @@ namespace Game.Runtime
                 ConfigRegistry.RegisterToContainer(builder, gameConfigResult);
             }
 
-            builder.Register<IUIRootService, UIRootService>(Lifetime.Singleton);
-            builder.Register<IUIFactory, UIFactory>(Lifetime.Singleton);
+            builder.Register<UIRootService>(Lifetime.Singleton)
+                .As<IUIRootService>();
+            builder.Register<UIFactory>(Lifetime.Singleton)
+                .As<IUIFactory>();
             builder.RegisterEntryPoint<UIRootEntryPoint>(Lifetime.Singleton);
             builder.RegisterEntryPoint<LoadingHudEntryPoint>(Lifetime.Singleton);
 
