@@ -32,21 +32,38 @@
 - [ ] （可选）过渡配置远程/环境覆盖：加入 ConfigManifest 可选项，`IValidatableConfig` 校验，加载失败回退本地默认；保留 Inspector 直引用兜底
 - [x] 编写单元测试（SceneServiceTest.cs）
 
-### 加载系统 / Loading System（优先级：高）
+### 加载系统 / Loading System（优先级：高）✅ 企业级重构完成
 - [x] 定义 `ILoadingService` 接口
 - [x] 实现加载进度追踪
   - [x] 进度更新接口
   - [x] 加载描述文本
   - [x] 支持嵌套加载（计数器）
+  - [x] 生命周期事件（OnLoadingStarted/Completed/Error）
+  - [x] 加载阶段管理（BeginPhase/EndPhase/OnPhaseChanged）
+  - [x] 错误处理（ReportError）
+- [x] 性能遥测系统
+  - [x] ILoadingTelemetry 接口
+  - [x] LoadingTelemetry 实现
+  - [x] 自动记录操作和阶段耗时
 - [x] 在 `GameLifetimeScope` 中实现 UI
   - [x] 进度条 UI
   - [x] 加载提示文字
   - [x] 旋转图标/动画
+  - [x] 平滑淡入淡出动画
+  - [x] 实现 ILoadingView 接口（UI 抽象化）
 - [x] Loading HUD 配置化（LoadingHudConfig SO，GameConfigManifest 统一加载）
+  - [x] 从 3 个配置项扩展到 18 个（动画、布局、样式、调试）
+  - [x] 移除所有硬编码魔法数字
+- [x] 移除协程，改用 UniTask（符合项目规范）
 - [x] 集成于 SceneService
   - [x] 场景加载时显示进度
   - [x] 异步资源加载进度
+  - [x] 细粒度加载阶段（4 个：卸载、转场淡出、加载资源、转场淡入）
 - [x] 引导场景 Loading HUD（首场景加载耗时 >2s 再启用，统一全局排序层）
+- [ ] **待改进 P0**：启动加载优化（创建 Splash 场景，异步加载配置，解决白屏问题）
+- [ ] **待改进 P1**：UI 预加载优化（集成 LoadingService，显示进度）
+- [ ] **待改进 P2**：关卡加载优化（批量预加载资源，细粒度进度）
+
 
 ### 对象池（优先级：高）
 - [x] 定义 `IObjectPoolManager` 接口
@@ -344,5 +361,5 @@
 
 ---
 
-**最后更新**：2025-12-22  
+**最后更新**：2025-12-23  
 **当前版本**：v0.1.0-dev

@@ -1,21 +1,23 @@
+using System;
+using System.Threading;
 using Core.Feature.Loading.Abstractions;
+using Cysharp.Threading.Tasks;
+using Game.Runtime.Loading.Abstractions;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Game.Runtime.Loading
 {
     /// <summary>
-    /// 简易加载 HUD（纯代码生成 UI），用于临时展示进度、描述和旋转动画。
-    /// 如需美术版样式，请将延迟、颜色等改为可配置 ScriptableObject（推荐放 Assets/Game/Configs/ 下并打 Addressable），在 EntryPoint 注入。
+    /// 简易加载 HUD（纯代码生成 UI），实现 ILoadingView 接口。
+    /// 用于临时展示进度、描述和旋转动画。
+    /// 如需美术版样式，可创建实现 ILoadingView 的预制体版本。
     /// </summary>
-    public sealed class LoadingHud : MonoBehaviour
+    public sealed class LoadingHud : MonoBehaviour, ILoadingView
     {
         private const int DefaultSortingOrder = 8000;
-        // 默认值；可由 LoadingHudConfig 覆盖（建议放 Assets/Game/Configs/LoadingHudConfig.asset）。
-        private float _showDelaySeconds = 2f;
-        private Color _overlayColor = new Color(0f, 0f, 0f, 0.55f);
-        private Color _spinnerColor = new Color(1f, 1f, 1f, 0.9f);
 
+        private LoadingHudConfig _config;
         private ILoadingService _loadingService;
         private CanvasGroup _canvasGroup;
         private Canvas _canvas;
@@ -23,20 +25,18 @@ namespace Game.Runtime.Loading
         private Slider _progressBar;
         private Text _descriptionText;
         private RectTransform _spinner;
-        private Coroutine _showRoutine;
+        private CancellationTokenSource _showCts;
+        private CancellationTokenSource _fadeCts;
+        private bool _isVisible;
+
+        public bool IsVisible => _isVisible;
 
         public void Initialize(ILoadingService loadingService, LoadingHudConfig config = null, Canvas externalCanvas = null)
         {
-            _loadingService = loadingService;
+            _loadingService = loadingService ?? throw new ArgumentNullException(nameof(loadingService), "加载服务不能为 null");
+            _config = config;
             _usingExternalCanvas = externalCanvas != null;
             _canvas = externalCanvas;
-
-            if (config != null)
-            {
-                _showDelaySeconds = config.ShowDelaySeconds;
-                _overlayColor = config.OverlayColor;
-                _spinnerColor = config.SpinnerColor;
-            }
 
             BuildVisualsIfNeeded();
 
@@ -51,11 +51,13 @@ namespace Game.Runtime.Loading
                 _loadingService.OnStateChanged -= OnStateChanged;
             }
 
-            if (_showRoutine != null)
-            {
-                StopCoroutine(_showRoutine);
-                _showRoutine = null;
-            }
+            _showCts?.Cancel();
+            _showCts?.Dispose();
+            _showCts = null;
+
+            _fadeCts?.Cancel();
+            _fadeCts?.Dispose();
+            _fadeCts = null;
 
             HideInstant();
         }
@@ -64,7 +66,8 @@ namespace Game.Runtime.Loading
         {
             if (_spinner != null && _spinner.gameObject.activeSelf)
             {
-                _spinner.Rotate(Vector3.forward, -180f * Time.unscaledDeltaTime);
+                float rotationSpeed = _config?.SpinnerRotationSpeed ?? 180f;
+                _spinner.Rotate(Vector3.forward, -rotationSpeed * Time.unscaledDeltaTime);
             }
         }
 
@@ -74,20 +77,20 @@ namespace Game.Runtime.Loading
 
             if (active)
             {
-                if (_showRoutine == null)
+                if (_showCts == null || _showCts.IsCancellationRequested)
                 {
-                    _showRoutine = StartCoroutine(ShowWithDelay());
+                    _showCts?.Dispose();
+                    _showCts = new CancellationTokenSource();
+                    ShowWithDelayAsync(_showCts.Token).Forget();
                 }
             }
             else
             {
-                if (_showRoutine != null)
-                {
-                    StopCoroutine(_showRoutine);
-                    _showRoutine = null;
-                }
+                _showCts?.Cancel();
+                _showCts?.Dispose();
+                _showCts = null;
 
-                HideInstant();
+                HideWithFadeAsync(this.GetCancellationTokenOnDestroy()).Forget();
             }
 
             if (_progressBar != null)
@@ -107,6 +110,69 @@ namespace Game.Runtime.Loading
                 _spinner.gameObject.SetActive(active && (_canvasGroup?.alpha ?? 0f) > 0f);
             }
         }
+
+        #region ILoadingView Implementation
+
+        public void SetProgress(float progress)
+        {
+            if (_progressBar != null)
+            {
+                _progressBar.value = Mathf.Clamp01(progress);
+            }
+        }
+
+        public void SetDescription(string description)
+        {
+            if (_descriptionText != null)
+            {
+                _descriptionText.text = string.IsNullOrEmpty(description) ? "正在加载..." : description;
+            }
+        }
+
+        public void Show()
+        {
+            if (_showCts == null || _showCts.IsCancellationRequested)
+            {
+                _showCts?.Dispose();
+                _showCts = new CancellationTokenSource();
+                ShowWithDelayAsync(_showCts.Token).Forget();
+            }
+        }
+
+        public void Hide()
+        {
+            _showCts?.Cancel();
+            _showCts?.Dispose();
+            _showCts = null;
+
+            HideWithFadeAsync(this.GetCancellationTokenOnDestroy()).Forget();
+        }
+
+        public void Dispose()
+        {
+            if (_loadingService != null)
+            {
+                _loadingService.OnStateChanged -= OnStateChanged;
+            }
+
+            _showCts?.Cancel();
+            _showCts?.Dispose();
+            _showCts = null;
+
+            _fadeCts?.Cancel();
+            _fadeCts?.Dispose();
+            _fadeCts = null;
+
+            HideInstant();
+
+            if (gameObject != null)
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        #endregion
+
 
         private void BuildVisualsIfNeeded()
         {
@@ -136,7 +202,8 @@ namespace Game.Runtime.Loading
                 parentTransform = transform;
             }
 
-            var overlay = CreatePanel(parentTransform, "Overlay", _overlayColor);
+            var overlayColor = _config?.OverlayColor ?? new Color(0f, 0f, 0f, 0.55f);
+            var overlay = CreatePanel(parentTransform, "Overlay", overlayColor);
             _canvasGroup = overlay.AddComponent<CanvasGroup>();
             _canvasGroup.alpha = 0f;
             _canvasGroup.blocksRaycasts = false;
@@ -172,13 +239,13 @@ namespace Game.Runtime.Loading
             go.transform.SetParent(parent, false);
 
             var rect = go.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0.25f, 0.15f);
-            rect.anchorMax = new Vector2(0.75f, 0.2f);
+            rect.anchorMin = _config?.ProgressBarAnchorMin ?? new Vector2(0.25f, 0.15f);
+            rect.anchorMax = _config?.ProgressBarAnchorMax ?? new Vector2(0.75f, 0.2f);
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
 
             var background = go.AddComponent<Image>();
-            background.color = new Color(1f, 1f, 1f, 0.15f);
+            background.color = _config?.ProgressBarBackgroundColor ?? new Color(1f, 1f, 1f, 0.15f);
 
             var fillArea = new GameObject("Fill", typeof(RectTransform), typeof(Image));
             fillArea.transform.SetParent(go.transform, false);
@@ -189,7 +256,7 @@ namespace Game.Runtime.Loading
             fillRect.offsetMax = Vector2.zero;
 
             var fillImage = fillArea.GetComponent<Image>();
-            fillImage.color = new Color(0.2f, 0.7f, 1f, 0.9f);
+            fillImage.color = _config?.ProgressBarFillColor ?? new Color(0.2f, 0.7f, 1f, 0.9f);
 
             var slider = go.GetComponent<Slider>();
             slider.targetGraphic = background;
@@ -208,8 +275,8 @@ namespace Game.Runtime.Loading
             go.transform.SetParent(parent, false);
 
             var rect = go.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0.2f, 0.22f);
-            rect.anchorMax = new Vector2(0.8f, 0.28f);
+            rect.anchorMin = _config?.DescriptionAnchorMin ?? new Vector2(0.2f, 0.22f);
+            rect.anchorMax = _config?.DescriptionAnchorMax ?? new Vector2(0.8f, 0.28f);
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
 
@@ -217,9 +284,9 @@ namespace Game.Runtime.Loading
             // Unity 6+ 不再提供 Arial.ttf 内置字体，改用 LegacyRuntime.ttf
             var builtinFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             text.font = builtinFont;
-            text.fontSize = 20;
+            text.fontSize = _config?.DescriptionFontSize ?? 20;
             text.alignment = TextAnchor.MiddleCenter;
-            text.color = new Color(1f, 1f, 1f, 0.92f);
+            text.color = _config?.DescriptionTextColor ?? new Color(1f, 1f, 1f, 0.92f);
             text.text = "正在加载...";
 
             return text;
@@ -231,40 +298,116 @@ namespace Game.Runtime.Loading
             go.transform.SetParent(parent, false);
 
             var rect = go.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(40f, 40f);
-            rect.anchorMin = new Vector2(0.5f, 0.65f);
-            rect.anchorMax = new Vector2(0.5f, 0.65f);
+            rect.sizeDelta = _config?.SpinnerSize ?? new Vector2(40f, 40f);
+            var anchor = _config?.SpinnerAnchor ?? new Vector2(0.5f, 0.65f);
+            rect.anchorMin = anchor;
+            rect.anchorMax = anchor;
             rect.anchoredPosition = Vector2.zero;
 
             var image = go.GetComponent<Image>();
-            image.color = _spinnerColor;
+            image.color = _config?.SpinnerColor ?? new Color(1f, 1f, 1f, 0.9f);
 
             return rect;
         }
 
-        private System.Collections.IEnumerator ShowWithDelay()
+        private async UniTask ShowWithDelayAsync(CancellationToken ct)
         {
-            yield return new WaitForSecondsRealtime(_showDelaySeconds);
-
-            if (_loadingService != null && !_loadingService.State.IsLoading)
+            try
             {
-                _showRoutine = null;
-                yield break;
+                float delay = _config?.ShowDelaySeconds ?? 2f;
+                await UniTask.Delay(TimeSpan.FromSeconds(delay), ignoreTimeScale: true, cancellationToken: ct);
+
+                if (ct.IsCancellationRequested) return;
+                if (_loadingService != null && !_loadingService.State.IsLoading) return;
+
+                await FadeToAsync(1f, _config?.FadeInDuration ?? 0.3f, ct);
+
+                if (ct.IsCancellationRequested) return;
+
+                if (_canvasGroup != null)
+                {
+                    _canvasGroup.blocksRaycasts = true;
+                    _canvasGroup.interactable = true;
+                }
+
+                if (_spinner != null)
+                {
+                    _spinner.gameObject.SetActive(true);
+                }
+
+                _isVisible = true;
+            }
+            catch (OperationCanceledException)
+            {
+                // 正常取消，不记录错误
+                _isVisible = false;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"显示加载 HUD 时发生错误：{ex.Message}");
+                _isVisible = false;
+            }
+        }
+
+        private async UniTask HideWithFadeAsync(CancellationToken ct)
+        {
+            try
+            {
+                if (_canvasGroup != null)
+                {
+                    _canvasGroup.blocksRaycasts = false;
+                    _canvasGroup.interactable = false;
+                }
+
+                await FadeToAsync(0f, _config?.FadeOutDuration ?? 0.2f, ct);
+
+                if (ct.IsCancellationRequested) return;
+
+                if (_spinner != null)
+                {
+                    _spinner.gameObject.SetActive(false);
+                }
+
+                _isVisible = false;
+            }
+            catch (OperationCanceledException)
+            {
+                // 正常取消，立即隐藏
+                HideInstant();
+                _isVisible = false;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"隐藏加载 HUD 时发生错误：{ex.Message}");
+                HideInstant();
+                _isVisible = false;
+            }
+        }
+
+        private async UniTask FadeToAsync(float targetAlpha, float duration, CancellationToken ct)
+        {
+            if (_canvasGroup == null) return;
+            if (duration <= 0f)
+            {
+                _canvasGroup.alpha = targetAlpha;
+                return;
             }
 
-            if (_canvasGroup != null)
+            float startAlpha = _canvasGroup.alpha;
+            float elapsed = 0f;
+
+            while (elapsed < duration)
             {
-                _canvasGroup.alpha = 1f;
-                _canvasGroup.blocksRaycasts = true;
-                _canvasGroup.interactable = true;
+                if (ct.IsCancellationRequested) return;
+
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                _canvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, t);
+
+                await UniTask.Yield(PlayerLoopTiming.Update, ct);
             }
 
-            if (_spinner != null)
-            {
-                _spinner.gameObject.SetActive(true);
-            }
-
-            _showRoutine = null;
+            _canvasGroup.alpha = targetAlpha;
         }
 
         private void HideInstant()
@@ -280,6 +423,8 @@ namespace Game.Runtime.Loading
             {
                 _spinner.gameObject.SetActive(false);
             }
+
+            _isVisible = false;
         }
     }
 }

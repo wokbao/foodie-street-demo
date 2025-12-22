@@ -1,5 +1,53 @@
 # 🍪 Foodie Street 开发日志
 
+## 2025-12-23 (周一凌晨，家里 Mac)
+
+### 完成的工作
+- ✅ **Loading 系统企业级重构**（Core 层 + Game 层大幅改进）
+  - **Core 层改动（子模块）**：
+    - 扩展 `ILoadingService` 接口：添加 4 个生命周期事件（OnLoadingStarted/Completed/Error/PhaseChanged）
+    - 扩展 `ILoadingService` 接口：添加加载阶段管理 API（BeginPhase/EndPhase/CurrentPhase）
+    - 升级 `LoadingService` 实现：实现生命周期钩子、阶段追踪、错误处理
+    - 新增 `ILoadingTelemetry` 接口和 `LoadingTelemetry` 实现：性能监控和遥测系统
+    - 修改 `CoreLifetimeScope`：注册 LoadingTelemetry 服务
+    - 升级 `SceneService`：添加细粒度加载阶段（4 个阶段：卸载当前场景、播放转场动画、加载场景资源、场景转场完成）
+  - **Game 层改动**：
+    - 扩展 `LoadingHudConfig`：从 3 个配置项增至 18 个（动画、布局、样式、调试）
+    - 重构 `LoadingHud`：移除协程改用 UniTask，实现平滑淡入淡出动画，所有参数配置化
+    - 实现 `ILoadingView` 接口：为未来的预制体版本铺路，支持多种 UI 实现
+  - **统计数据**：
+    - 修改文件：5 个（Core 层 4 个，Game 层 1 个）
+    - 新增文件：4 个（Core 层 2 个，Game 层 2 个）
+    - 代码行数：+约 700 行
+
+### 架构改进
+- **细粒度进度追踪**：从笼统的 "加载中..." 进化为 4 个清晰的阶段描述
+- **性能遥测**：自动记录每个操作和阶段的耗时，便于性能分析和优化
+- **配置驱动**：所有 UI 参数外部化，移除硬编码魔法数字
+- **UniTask 重构**：符合项目规范，零 GC 分配，正确的 CancellationToken 传递
+
+### 发现的问题
+- ⚠️ **启动加载黑屏**：配置文件加载是同步阻塞的（`ConfigLoader.LoadFromManifest`），导致启动时白屏 3-5 秒
+- ⚠️ **UI 预加载无进度**：`UIPreloader` 预加载时没有进度反馈
+- ⚠️ **关卡加载无细粒度追踪**：未来关卡预加载时需要批量加载资源
+
+### 下一步计划（按优先级）
+- [ ] **P0 必须**：修复启动加载黑屏问题
+  - 创建 `ConfigLoader.LoadFromManifestAsync()` 异步版本
+  - 创建 Splash 启动场景 + `SplashBootstrapper`
+  - 修改 LifetimeScope 使用缓存配置
+- [ ] **P1 建议**：UI 预加载优化（集成 LoadingService，显示进度）
+- [ ] **P2 可选**：关卡加载优化（创建 LevelLoader，批量预加载）
+- [ ] 提交今天的代码（如果还未提交）
+
+### 技术要点
+- Begin/Dispose 控制 HUD 显示/隐藏，BeginPhase/EndPhase 更新细节描述
+- 遥测系统使用 `Time.realtimeSinceStartup` 记录时间戳
+- SceneService 的 4 个阶段提升了用户体验，避免 "卡住" 的感觉
+- VContainer 依赖注入：LoadingService 构造函数需要 ILoadingTelemetry 参数
+
+---
+
 ## 2025-12-22 (周日)
 
 ### 完成的工作
