@@ -63,6 +63,47 @@ namespace Game.Runtime.Loading
         [Tooltip("Spinner 锚点位置（相对父容器 0-1）。")]
         [SerializeField] private Vector2 _spinnerAnchor = new Vector2(0.5f, 0.65f);
 
+        [Header("=== 美术扩展接口 ===")]
+        [Header("Logo 动画")]
+        [Tooltip("可选：自定义品牌 Logo Sprite\n" +
+                 "美术实现：在 Unity 中创建 Sprite（建议 512x512，透明背景），拖入此字段\n" +
+                 "为空时不显示 Logo")]
+        [SerializeField] private Sprite _logoSprite;
+
+        [Tooltip("可选：Logo 动画控制器（Animator）\n" +
+                 "美术实现：创建 Animator Controller，设置 Logo 淡入/缩放动画\n" +
+                 "为空时 Logo 静态显示")]
+        [SerializeField] private RuntimeAnimatorController _logoAnimator;
+
+        [Tooltip("Logo 显示位置（垂直方向，0=底部，1=顶部）")]
+        [SerializeField] [Range(0f, 1f)] private float _logoVerticalPosition = 0.7f;
+
+        [Header("背景定制")]
+        [Tooltip("可选：自定义背景 Sprite\n" +
+                 "美术实现：提供 1920x1080 或更高分辨率背景图，格式 PNG/JPG\n" +
+                 "为空时使用 OverlayColor 纯色背景")]
+        [SerializeField] private Sprite _backgroundSprite;
+
+        [Header("进度条样式")]
+        [Tooltip("可选：自定义进度条填充 Sprite\n" +
+                 "美术实现：使用 Sliced Sprite（九宫格切片），设置合理的 Border\n" +
+                 "为空时使用纯色填充")]
+        [SerializeField] private Sprite _progressBarFillSprite;
+
+        [Tooltip("可选：自定义进度条背景 Sprite\n" +
+                 "美术实现：使用 Sliced Sprite（九宫格切片），设置合理的 Border\n" +
+                 "为空时使用纯色背景")]
+        [SerializeField] private Sprite _progressBarBackgroundSprite;
+
+        [Header("Tips 文本系统")]
+        [Tooltip("可选：加载时随机显示的提示文本列表\n" +
+                 "美术/策划实现：每行一条提示（控制在 20 字以内）\n" +
+                 "为空时不显示 Tips")]
+        [SerializeField] [TextArea(3, 10)] private string[] _loadingTips;
+
+        [Tooltip("Tips 文本切换间隔（秒）")]
+        [SerializeField] [Range(1f, 10f)] private float _tipsSwitchInterval = 3f;
+
         [Header("调试")]
         [Tooltip("显示调试信息（FPS、加载时间等）。")]
         [SerializeField] private bool _showDebugInfo = false;
@@ -97,5 +138,15 @@ namespace Game.Runtime.Loading
 
         // 调试
         public bool ShowDebugInfo => _showDebugInfo;
+
+        // 美术扩展接口
+        public Sprite LogoSprite => _logoSprite;
+        public RuntimeAnimatorController LogoAnimator => _logoAnimator;
+        public float LogoVerticalPosition => _logoVerticalPosition;
+        public Sprite BackgroundSprite => _backgroundSprite;
+        public Sprite ProgressBarFillSprite => _progressBarFillSprite;
+        public Sprite ProgressBarBackgroundSprite => _progressBarBackgroundSprite;
+        public string[] LoadingTips => _loadingTips;
+        public float TipsSwitchInterval => _tipsSwitchInterval;
     }
 }
