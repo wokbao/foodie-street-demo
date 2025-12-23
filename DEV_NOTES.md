@@ -19,6 +19,14 @@
     - 修改文件：5 个（Core 层 4 个，Game 层 1 个）
     - 新增文件：4 个（Core 层 2 个，Game 层 2 个）
     - 代码行数：+约 700 行
+  - ✅ **启动流程优化**：
+    - 实现 `ConfigLoader.LoadFromManifestAsync` 异步加载接口
+    - 实现 `SplashBootstrapper` 启动脚本
+    - 创建 `Game_Splash` 启动场景
+    - 实现 `ConfigCache` 机制，支持 Core/Game LifetimeScope 从缓存读取配置
+  - ✅ **UI 预加载优化**：
+    - `UIPreloader` 集成 `ILoadingService`，显示 "预加载 UI (x/n)" 进度
+    - 在 `GameLifetimeScope` 启动时自动执行，用户无感知
 
 ### 架构改进
 - **细粒度进度追踪**：从笼统的 "加载中..." 进化为 4 个清晰的阶段描述
@@ -32,11 +40,11 @@
 - ⚠️ **关卡加载无细粒度追踪**：未来关卡预加载时需要批量加载资源
 
 ### 下一步计划（按优先级）
-- [ ] **P0 必须**：修复启动加载黑屏问题
+- [x] **P0 必须**：修复启动加载黑屏问题 ✅
   - 创建 `ConfigLoader.LoadFromManifestAsync()` 异步版本
   - 创建 Splash 启动场景 + `SplashBootstrapper`
   - 修改 LifetimeScope 使用缓存配置
-- [ ] **P1 建议**：UI 预加载优化（集成 LoadingService，显示进度）
+- [x] **P1 建议**：UI 预加载优化（集成 LoadingService，显示进度） ✅
 - [ ] **P2 可选**：关卡加载优化（创建 LevelLoader，批量预加载）
 - [ ] 提交今天的代码（如果还未提交）
 
