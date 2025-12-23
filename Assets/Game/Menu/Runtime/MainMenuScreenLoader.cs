@@ -17,7 +17,7 @@ namespace Game.Menu.Runtime
     /// 负责按需加载主菜单屏幕（Addressable Key: UI/Screens/MainMenu），并手动装配 MainMenuPresenter。
     /// 场景中的 Canvas 为空挂点，由此类实例化 UI。
     /// </summary>
-    public sealed class MainMenuScreenLoader : IStartable, IDisposable
+    public sealed class MainMenuScreenLoader : IStartable, IDisposable, ISceneReadyHandler
     {
         private const string AddressKey = UIKeys.Screens.MainMenu;
 
@@ -29,6 +29,7 @@ namespace Game.Menu.Runtime
         private GameObject _instance;
         private MainMenuPresenter _presenter;
         private CancellationTokenSource _cts = new CancellationTokenSource();
+        private UniTaskCompletionSource _sceneReadyTcs = new UniTaskCompletionSource();
 
         [Inject]
         public MainMenuScreenLoader(
@@ -85,14 +86,30 @@ namespace Game.Menu.Runtime
                     quitHandler,
                     _logService);
                 _presenter.Initialize();
+
+                // 关键：等待几帧，确保 Canvas 完成重建和渲染
+                // 1帧可能不够（Layout Rebuild -> Graphic Rebuild -> Batching -> Render）
+                UnityEngine.Debug.Log($"[MainMenuScreenLoader] [帧:{UnityEngine.Time.frameCount}] UI 实例化完成，开始等待渲染帧...");
+
+                // 等待至少 2-3 帧
+                await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
+                await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
+                await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
+
+                // 标记场景准备就绪
+                _sceneReadyTcs.TrySetResult();
+                _logService?.Information(LogCategory.Menu, $"[主菜单] [帧:{UnityEngine.Time.frameCount}] 视觉准备就绪 (Wait Finished)");
             }
             catch (OperationCanceledException)
             {
                 _logService?.Warning(LogCategory.Menu, "[主菜单] 加载被取消");
+                _sceneReadyTcs.TrySetCanceled();
             }
             catch (Exception ex)
             {
                 _logService?.Error(LogCategory.Menu, $"[主菜单] 加载 UI 失败：{ex.Message}", ex);
+                // 即使失败也标记完成，避免无限卡住 Loading
+                _sceneReadyTcs.TrySetResult();
             }
         }
 
@@ -121,6 +138,10 @@ namespace Game.Menu.Runtime
         {
             _uiRootService.EnsureInitialized();
             return _uiRootService.GetLayer(UILayer.Main);
+        }
+        public UniTask WaitForSceneReadyAsync()
+        {
+            return _sceneReadyTcs.Task;
         }
     }
 }

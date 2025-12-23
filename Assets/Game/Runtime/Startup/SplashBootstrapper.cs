@@ -7,6 +7,7 @@ using Game.Runtime.Configs;
 using Game.Runtime.Loading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using VContainer;
 
 namespace Game.Runtime.Startup
 {
@@ -52,6 +53,9 @@ namespace Game.Runtime.Startup
             DontDestroyOnLoad(hudGo); // 确保场景切换时不被销毁
             var hud = hudGo.AddComponent<LoadingHud>();
             hud.Initialize(loadingService);
+
+            // 监听场景切换，以便在黑屏期间销毁 HUD
+            SceneManager.activeSceneChanged += OnActiveSceneChanged;
 
             try
             {
@@ -101,7 +105,27 @@ namespace Game.Runtime.Startup
                 //  阶段 3: 跳转到主菜单
                 // ========================================
 
-                SceneManager.LoadScene(_nextSceneName);
+                // 使用 SceneService 加载场景，以便触发 ISceneReadyHandler 检查和转场动画
+                if (coreScope.Container != null)
+                {
+                    var sceneService = coreScope.Container.Resolve<Core.Feature.SceneManagement.Abstractions.ISceneService>();
+                    if (sceneService != null)
+                    {
+                        // 播放转场并加载
+                        Debug.Log("[SplashBootstrapper] 委托 SceneService 加载主菜单...");
+                        // 注意：LoadSceneAsync 内部默认 Single 模式
+                        await sceneService.LoadSceneAsync(_nextSceneName, true);
+                    }
+                    else
+                    {
+                        Debug.LogError("[SplashBootstrapper] 无法解析 ISceneService，降级使用 SceneManager");
+                        SceneManager.LoadScene(_nextSceneName);
+                    }
+                }
+                else
+                {
+                    SceneManager.LoadScene(_nextSceneName);
+                }
             }
             catch (OperationCanceledException)
             {
@@ -137,13 +161,32 @@ namespace Game.Runtime.Startup
             }
             finally
             {
-                // 清理临时对象
+                // Unsubscribe and cleanup in case activeSceneChanged didn't fire (defensive)
+                SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+
+                // 清理临时对象 (Fallback)
                 loadingService?.Dispose();
                 if (hudGo != null)
                 {
                     Destroy(hudGo);
                 }
             }
+        }
+
+        private void OnActiveSceneChanged(Scene current, Scene next)
+        {
+            // 当场景切换发生时（此时正处于黑屏遮罩期），立即销毁临时 LoadingHud
+            // 这样当黑屏褪去时，用户只能看到新场景的 UI，而不会看到旧的进度条
+            Debug.Log($"[SplashBootstrapper] 场景切换检测: {current.name} -> {next.name}，正在销毁临时 HUD...");
+
+            var hudGo = GameObject.Find("LoadingHud_Temp");
+            if (hudGo != null)
+            {
+                Destroy(hudGo);
+            }
+
+            // Unsubscribe immediately
+            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
         }
 
         private void OnValidate()

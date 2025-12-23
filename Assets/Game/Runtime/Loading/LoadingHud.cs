@@ -73,7 +73,8 @@ namespace Game.Runtime.Loading
 
         private void OnStateChanged(LoadingState state)
         {
-            var active = state.IsLoading;
+            // 只在 ShouldShowUi 为 true (有前台阻塞任务) 时才显示 HUD
+            var active = state.ShouldShowUi;
 
             if (active)
             {

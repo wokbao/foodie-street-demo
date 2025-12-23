@@ -30,7 +30,7 @@ namespace Game.UI.Runtime
 
         [Header("过渡层")]
         [SerializeField] private string _transitionLayerName = "Layer_Transition";
-        [SerializeField] private int _transitionSortingOrder = 9000;
+        [SerializeField] private int _transitionSortingOrder = 9999;
 
         public string RootName => _rootName;
         public int RootSortingOrder => _rootSortingOrder;

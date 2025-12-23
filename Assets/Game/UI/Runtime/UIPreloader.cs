@@ -39,7 +39,8 @@ namespace Game.UI.Runtime
 
         private async UniTaskVoid PreloadAllAsync()
         {
-            using var loadingScope = _loadingService.Begin("预加载 UI 资源");
+            // 使用 Background 模式，避免触发全局 Loading HUD 阻断用户
+            using var loadingScope = _loadingService.Begin("预加载 UI 资源", LoadingMode.Background);
 
             _log.Information(LogCategory.UI, $"开始预加载 UI 资源，共 {PreloadKeys.Length} 个");
 

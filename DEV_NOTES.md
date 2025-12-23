@@ -27,6 +27,10 @@
   - ✅ **UI 预加载优化**：
     - `UIPreloader` 集成 `ILoadingService`，显示 "预加载 UI (x/n)" 进度
     - 在 `GameLifetimeScope` 启动时自动执行，用户无感知
+  - ✅ **架构规范化 (20:30)**:
+    - `SceneService` 解耦：完全移除 `UnityEngine.AddressableAssets` 依赖，改用 `IAssetProvider` 加载场景
+    - `IAssetProvider` 升级：集成 `LoadSceneAsync`/`UnloadSceneAsync`
+    - 层级标准化：`UIHierarchyConfig` 与 `SceneTransitionConfig` 统一过渡层级为 9999
 
 ### 架构改进
 - **细粒度进度追踪**：从笼统的 "加载中..." 进化为 4 个清晰的阶段描述

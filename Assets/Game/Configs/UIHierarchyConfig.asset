@@ -23,4 +23,4 @@ MonoBehaviour:
   _loadingLayerName: Layer_Loading
   _loadingSortingOrder: 8000
   _transitionLayerName: Layer_Transition
-  _transitionSortingOrder: 9000
+  _transitionSortingOrder: 9999
