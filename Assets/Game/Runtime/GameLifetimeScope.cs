@@ -50,14 +50,25 @@ namespace Game.Runtime
 
         protected override void Configure(IContainerBuilder builder)
         {
+            Debug.Log("[GameLifetimeScope] === Configure 开始执行 ===");
+
             // ========================================
             // 已注册的游戏域服务
             // ========================================
 
-            // 通过 GameConfigManifest 批量加载配置（Addressables），并注册到容器
-            if (_gameConfigManifest != null && _gameConfigManifest.Entries.Count > 0)
+            // 优先从缓存加载游戏配置（Splash 场景预加载）
+            ConfigLoadResult gameConfigResult = ConfigCache.GetGameConfigs();
+
+            // 降级策略：如果缓存为空（如直接从编辑器运行此场景），则同步加载
+            if (gameConfigResult == null && _gameConfigManifest != null && _gameConfigManifest.Entries.Count > 0)
             {
-                var gameConfigResult = ConfigLoader.LoadFromManifest(_gameConfigManifest);
+                Debug.LogWarning("[GameLifetimeScope] 配置缓存为空，降级到同步加载（仅开发模式，正式版本应从 Splash 场景启动）");
+                gameConfigResult = ConfigLoader.LoadFromManifest(_gameConfigManifest);
+            }
+
+            // 注册配置到容器
+            if (gameConfigResult != null)
+            {
                 ConfigRegistry.RegisterToContainer(builder, gameConfigResult);
             }
 

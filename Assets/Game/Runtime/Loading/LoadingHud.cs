@@ -314,7 +314,8 @@ namespace Game.Runtime.Loading
         {
             try
             {
-                float delay = _config?.ShowDelaySeconds ?? 2f;
+                // 默认 0.1 秒，避免加载过快时UI闪烁，同时确保能显示
+                float delay = _config?.ShowDelaySeconds ?? 0.1f;
                 await UniTask.Delay(TimeSpan.FromSeconds(delay), ignoreTimeScale: true, cancellationToken: ct);
 
                 if (ct.IsCancellationRequested) return;

@@ -1,3 +1,4 @@
+using Core.Feature.Loading.Abstractions;
 using Core.Feature.Logging.Abstractions;
 using Cysharp.Threading.Tasks;
 using Game.UI.Runtime.Abstractions;
@@ -13,6 +14,7 @@ namespace Game.UI.Runtime
     {
         private readonly IUIFactory _uiFactory;
         private readonly ILogService _log;
+        private readonly ILoadingService _loadingService;
 
         /// <summary>
         /// 需要预加载的 UI Key 列表
@@ -23,10 +25,11 @@ namespace Game.UI.Runtime
             UIKeys.Common.PanelHeader,
         };
 
-        public UIPreloader(IUIFactory uiFactory, ILogService log)
+        public UIPreloader(IUIFactory uiFactory, ILogService log, ILoadingService loadingService)
         {
             _uiFactory = uiFactory;
             _log = log;
+            _loadingService = loadingService;
         }
 
         public void Start()
@@ -36,10 +39,18 @@ namespace Game.UI.Runtime
 
         private async UniTaskVoid PreloadAllAsync()
         {
+            using var loadingScope = _loadingService.Begin("预加载 UI 资源");
+
             _log.Information(LogCategory.UI, $"开始预加载 UI 资源，共 {PreloadKeys.Length} 个");
 
-            foreach (var key in PreloadKeys)
+            for (int i = 0; i < PreloadKeys.Length; i++)
             {
+                var key = PreloadKeys[i];
+                var progress = (float)(i + 1) / PreloadKeys.Length;
+                var desc = $"预加载 UI ({i + 1}/{PreloadKeys.Length})";
+
+                _loadingService.ReportProgress(progress, desc);
+
                 try
                 {
                     await _uiFactory.PreloadAsync(key);
