@@ -156,6 +156,66 @@ namespace Game.UI.Runtime
             ReturnToPool(instance);
         }
 
+        public async UniTask<DialogResult> ShowConfirmDialogAsync(string message, Transform parent = null, CancellationToken ct = default)
+        {
+            // 加载并实例化对话框（不使用 ShowDialogAsync，避免自动堆栈管理）
+            var instance = await InstantiateAsync(UIKeys.Common.DialogConfirm, parent, null, ct);
+            if (instance == null)
+            {
+                _logService?.Error(LogCategory.UI, "确认对话框加载失败");
+                return DialogResult.None;
+            }
+
+            // 获取对话框组件
+            var dialog = instance.GetComponentInChildren<UIConfirmDialog>(true);
+            if (dialog == null)
+            {
+                _logService?.Error(LogCategory.UI, $"预制体上未找到 UIConfirmDialog 组件：{UIKeys.Common.DialogConfirm}");
+                ReturnToPool(instance);
+                return DialogResult.None;
+            }
+
+            // 手动管理堆栈和关闭事件
+            var closeCompletionSource = new UniTaskCompletionSource();
+            Action closeSubscription = null;
+
+            closeSubscription = () =>
+            {
+                _uiStackManager.Pop();
+            };
+            dialog.CloseRequested += closeSubscription;
+
+            _uiStackManager.Push(instance, async () =>
+            {
+                // 取消订阅
+                if (dialog != null && closeSubscription != null)
+                {
+                    dialog.CloseRequested -= closeSubscription;
+                }
+
+                // 播放关闭动画并归还对象池
+                await _animator.PlayHideAsync(instance);
+                ReturnToPool(instance);
+
+                // 通知关闭流程完成
+                closeCompletionSource.TrySetResult();
+            });
+
+            // 播放打开动画
+            await _animator.PlayShowAsync(instance);
+
+            // 等待用户选择（阻塞直到用户点击按钮）
+            var result = await dialog.ShowAsync(message);
+
+            // 等待 UI 关闭流程完全完成（动画 + 对象池归还）
+            await closeCompletionSource.Task;
+
+            // 执行到这里时，UI 已经完全关闭，可以安全返回结果
+            _logService?.Debug(LogCategory.UI, $"确认对话框已关闭，用户选择：{result}");
+            return result;
+        }
+
+
         public void ReleaseAll()
         {
             var keys = new List<string>(_prefabCache.Keys);

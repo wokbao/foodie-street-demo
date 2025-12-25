@@ -1,6 +1,40 @@
 # 🍪 Foodie Street 开发日志
 
-## 2025-12-23 (周一凌晨，家里 Mac)
+## 2025-12-25 (周三晚上，家里 Mac)
+
+### 完成的工作
+- ✅ **UI 确认对话框架构重构**（Game 层企业级改造）
+  - **Game 层改动**：
+    - 新增 `DialogResult` 枚举（Confirmed/Cancelled/None），替代布尔值判断
+    - 重构 `UIConfirmDialog`：移除回调 API，改为基于结果返回的 `ShowAsync` 方法
+    - 扩展 `IUIFactory` 接口：新增 `ShowConfirmDialogAsync` 方法
+    - 实现 `UIFactory.ShowConfirmDialogAsync`：确保 UI 完全关闭后才返回结果
+    - 修复异步完成顺序问题：使用 `closeCompletionSource` 等待关闭流程完成
+    - 简化 `DefaultQuitHandler`：从 70 行减少到 45 行，逻辑更清晰
+  - **代码质量优化**：
+    - 为所有公共 API 添加完善的 XML 文档注释（含详细说明、示例和执行流程）
+    - 分析代码复用可能性（结论：fire-and-forget vs 等待完成，模式差异大，不适合提取）
+  - **统计数据**：
+    - 新增文件：1 个（DialogResult.cs）
+    - 修改文件：4 个（UIConfirmDialog.cs, IUIFactory.cs, UIFactory.cs, DefaultQuitHandler.cs）
+    - 代码行数：+约 300 行（含注释）
+
+### 架构改进
+- **执行顺序保证**：业务逻辑在 UI 清理完成后执行，避免访问已销毁的对象
+- **类型安全**：使用枚举代替布尔值，编译时检查，语义清晰
+- **文档完善**：XML 注释包含详细说明、使用示例和执行流程
+- **向前兼容**：为未来泛型对话框 API 和取消令牌支持预留路线图
+
+### 遇到的问题
+- ❌ **初次实现错误**：`ShowAsync` 返回结果和 UI 关闭并发执行，导致 `Application.Quit()` 在动画播放前调用，触发 `MissingReferenceException`
+- ✅ **解决方案**：添加 `closeCompletionSource`，等待关闭流程（动画+对象池归还）完全完成后才返回结果
+
+### 下一步计划
+- [ ] 关注未来对话框需求，评估是否需要泛型化 API（当有 3+ 种对话框时）
+- [ ] 如有超时/场景切换需求，实现完善的取消令牌支持
+
+---
+
 
 ### 完成的工作
 - ✅ **Loading 系统企业级重构**（Core 层 + Game 层大幅改进）

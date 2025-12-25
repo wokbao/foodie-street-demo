@@ -5,6 +5,7 @@ using Game.UI.Runtime;
 using Game.UI.Runtime.Abstractions;
 using UnityEngine;
 
+
 namespace Game.Menu.Runtime
 {
     /// <summary>
@@ -27,6 +28,7 @@ namespace Game.Menu.Runtime
             _uiFactory = uiFactory;
             _uiRootService = uiRootService;
         }
+
 
         public async UniTask RequestQuitAsync()
         {
@@ -56,48 +58,23 @@ namespace Game.Menu.Runtime
             _isDialogOpen = true;
             _logService?.Information(LogCategory.Menu, "弹出退出确认弹窗");
 
-            // 使用 ShowDialogAsync 自动管理堆栈（ESC 和按钮点击都会自动关闭）
-            var instance = await _uiFactory.ShowDialogAsync(
-                UIKeys.Common.DialogConfirm,
-                parent,
-                onClose: () =>
-                {
-                    _logService?.Debug(LogCategory.Menu, "退出弹窗已关闭");
-                    _isDialogOpen = false;
-                });
+            // 使用 ShowConfirmDialogAsync 获取用户选择，UI 关闭后才会返回结果
+            var result = await _uiFactory.ShowConfirmDialogAsync("确定要退出游戏吗？", parent);
 
-            if (instance == null)
+            _isDialogOpen = false;
+
+            // 根据用户选择执行对应逻辑（此时 UI 已安全关闭，所有服务仍可用）
+            if (result == DialogResult.Confirmed)
             {
-                _logService?.Warning(LogCategory.Menu, "实例化确认弹窗失败，直接退出");
-                _isDialogOpen = false;
+                _logService?.Information(LogCategory.Menu, "用户确认退出");
                 QuitApplication();
-                return;
             }
-
-            var dialog = instance.GetComponentInChildren<UIConfirmDialog>(true);
-            if (dialog == null)
+            else
             {
-                _logService?.Warning(LogCategory.Menu, "预制体上未找到 UIConfirmDialog，直接退出");
-                _isDialogOpen = false;
-                Object.Destroy(instance);
-                QuitApplication();
-                return;
+                _logService?.Information(LogCategory.Menu, $"用户取消退出（结果：{result}）");
             }
-
-            // 只关心业务逻辑，不关心关闭细节（框架自动处理）
-            dialog.Show(
-                "确定要退出游戏吗？",
-                onConfirm: () =>
-                {
-                    _logService?.Information(LogCategory.Menu, "用户确认退出");
-                    QuitApplication();
-                },
-                onCancel: () =>
-                {
-                    _logService?.Information(LogCategory.Menu, "用户取消退出");
-                    // 不需要手动关闭，IUICloseable 会自动触发关闭流程
-                });
         }
+
 
         private void QuitApplication()
         {

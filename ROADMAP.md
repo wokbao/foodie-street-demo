@@ -195,6 +195,16 @@
 - [ ] 在 `MenuLifetimeScope` 中注册
 - [x] 预制化通用弹窗/面板（UGUI+TMP），统一样式/动画（遮罩、渐隐/位移）
 - [x] Settings/Quit 弹窗接入 `IMenuNavigationService` / `IQuitHandler`，复用统一 UI 资产
+- [x] **UI 对话框系统企业级重构（2025-12-25 完成）** ✅
+  - [x] 创建 `DialogResult` 枚举（类型安全的结果判断）
+  - [x] 重构 `UIConfirmDialog` 为基于结果返回的 API（`ShowAsync` 方法）
+  - [x] 扩展 `IUIFactory` 接口（新增 `ShowConfirmDialogAsync` 方法）
+  - [x] 修复异步完成顺序问题（`closeCompletionSource` 确保 UI 完全关闭后返回）
+  - [x] 简化业务代码（`DefaultQuitHandler` 从 70 行减至 45 行）
+  - [x] 添加完善的 XML 文档注释（含详细说明、示例和执行流程）
+  - [ ] **未来可选优化（路线图）**：
+    - [ ] 泛型对话框 API（当有 3+ 种对话框时实施）
+    - [ ] 完善取消令牌支持（当需要超时/场景切换时实施）
 - [ ] UI 目录规范化：`Common/` 基础件、`Screens/MainMenu/` 组合件、`Styles/` 主题/字体/色板、`Fonts/` 字体资产
 - [x] UI 工厂 + Addressables 按需实例化（弹窗/设置等从 Addressables 加载，带释放/缓存策略）
 - [x] 导航栈/状态管理：防重复打开，支持 Push/Pop、Overlay 弹窗
@@ -361,5 +371,5 @@
 
 ---
 
-**最后更新**：2025-12-23  
+**最后更新**：2025-12-25  
 **当前版本**：v0.1.0-dev
