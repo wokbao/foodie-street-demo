@@ -55,6 +55,14 @@ namespace Game.UI.Runtime
             CloseRequested?.Invoke();
         }
 
+        /// <inheritdoc/>
+        public void OnExternalClose()
+        {
+            // UIInfoDialog 是同步的单按钮弹窗，无需特殊清理
+            // 外部关闭时不调用 _onOk 回调，与点击确认按钮区分
+        }
+
+
 #if UNITY_EDITOR
         public void EditorWireUp(TextMeshProUGUI message, Button okButton)
         {

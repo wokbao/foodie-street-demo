@@ -129,6 +129,14 @@ namespace Game.UI.Runtime
             CloseRequested?.Invoke();
         }
 
+        /// <inheritdoc/>
+        public void OnExternalClose()
+        {
+            // 设置取消结果，确保异步等待的 ShowAsync 能正确返回
+            _completionSource?.TrySetResult(DialogResult.Cancelled);
+            // 不触发 CloseRequested，因为外部调用者（如 UIStackManager）已经在处理关闭流程
+        }
+
 #if UNITY_EDITOR
         public void EditorWireUp(TextMeshProUGUI message, Button confirmButton, Button cancelButton)
         {

@@ -45,6 +45,13 @@ namespace Game.UI.Runtime
             }
         }
 
+        /// <inheritdoc/>
+        public void OnExternalClose()
+        {
+            // UIPanelWithHeader 是同步面板容器，无需特殊清理
+        }
+
+
 #if UNITY_EDITOR
         public void EditorWireUp(TextMeshProUGUI title, Button closeButton, RectTransform contentRoot)
         {

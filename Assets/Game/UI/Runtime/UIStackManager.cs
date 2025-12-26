@@ -66,9 +66,17 @@ namespace Game.UI.Runtime
 
             var entry = _stack.Pop();
             var uiName = entry.UI != null ? entry.UI.name : "(已销毁)";
-            
+
             _log.Debug(LogCategory.UI, $"堆栈弹出：{uiName}，剩余深度：{_stack.Count}");
-            
+
+            // 在调用 OnClose 之前，先通知可关闭 UI 进行外部关闭处理（基于接口抽象）
+            // 这确保了 UI 组件能在外部关闭前完成必要的清理（如设置对话框异步结果）
+            if (entry.UI != null)
+            {
+                var closeable = entry.UI.GetComponentInChildren<IUICloseable>(includeInactive: true);
+                closeable?.OnExternalClose();
+            }
+
             // 调用关闭回调（由调用方决定是销毁还是归还对象池）
             entry.OnClose?.Invoke();
 
@@ -84,7 +92,7 @@ namespace Game.UI.Runtime
             }
 
             var entry = _stack.Peek();
-            
+
             // 检查 UI 是否已被外部销毁
             if (entry.UI == null)
             {
@@ -100,7 +108,7 @@ namespace Game.UI.Runtime
         public void Clear()
         {
             _log.Information(LogCategory.UI, $"清空所有弹窗，共 {_stack.Count} 个");
-            
+
             while (_stack.Count > 0)
             {
                 var entry = _stack.Pop();
