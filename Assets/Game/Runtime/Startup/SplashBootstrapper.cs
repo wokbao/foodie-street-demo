@@ -1,5 +1,4 @@
 using System;
-using Core.Feature.Loading.Abstractions;
 using Core.Feature.Loading.Runtime;
 using Core.Runtime.Configuration;
 using Cysharp.Threading.Tasks;
@@ -46,7 +45,8 @@ namespace Game.Runtime.Startup
         private async void Start()
         {
             // 创建临时 LoadingService（用于显示配置加载进度）
-            var loadingService = new LoadingService();
+            // 注意：由于 CoreLifetimeScope 尚未构建，这里传入 null 依赖是安全的（LoadingService 内部已做空检查）
+            var loadingService = new LoadingService(null, null);
 
             // 创建临时 LoadingHud
             var hudGo = new GameObject("LoadingHud_Temp");

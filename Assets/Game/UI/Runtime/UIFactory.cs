@@ -25,6 +25,9 @@ namespace Game.UI.Runtime
         // 记录实例对应的 Key，用于归还时找到正确的池
         private readonly Dictionary<GameObject, string> _instanceKeyMap = new();
 
+        // 默认对象池容量
+        private const int DefaultPoolCapacity = 5;
+
         public IReadOnlyCollection<string> CachedKeys => _prefabCache.Keys;
 
         public UIFactory(
@@ -62,7 +65,7 @@ namespace Game.UI.Runtime
                 parent,
                 worldPositionStays: false,
                 onReset: ResetUIInstance,
-                maxCapacity: 5);
+                maxCapacity: DefaultPoolCapacity);
 
             instance.name = prefab.name;
             instance.SetActive(true);
