@@ -1,10 +1,20 @@
 root = true
 
+# 全局设置
+[*]
+charset = utf-8
+end_of_line = crlf
+trim_trailing_whitespace = true
+insert_final_newline = true
+
 [*.cs]
+indent_style = space
+indent_size = 4
+
 #### Naming styles ####
 
-# Private instance fields should start with underscore
-dotnet_naming_rule.private_instance_fields_should_begin_with_underscore.severity = suggestion
+# 私有字段必须以下划线开头（强制执行）
+dotnet_naming_rule.private_instance_fields_should_begin_with_underscore.severity = error
 dotnet_naming_rule.private_instance_fields_should_begin_with_underscore.symbols = private_instance_fields
 dotnet_naming_rule.private_instance_fields_should_begin_with_underscore.style = private_instance_fields_style
 
@@ -14,9 +24,30 @@ dotnet_naming_symbols.private_instance_fields.applicable_accessibilities = priva
 dotnet_naming_style.private_instance_fields_style.capitalization = camel_case
 dotnet_naming_style.private_instance_fields_style.required_prefix = _
 
-#### ReSharper rules ####
+#### 代码质量规则 ####
+
+# 禁止未使用的 using（警告）
+dotnet_diagnostic.IDE0005.severity = warning
+
+# 异步方法未 await（错误）
+dotnet_diagnostic.CS4014.severity = error
+
+# 禁止空 catch 块
+dotnet_diagnostic.CA1031.severity = warning
+dotnet_diagnostic.CA2200.severity = error
+
+#### Unity 特殊处理 ####
+
+# Unity MonoBehaviour 生命周期方法
+dotnet_diagnostic.CA1822.severity = none  # 方法可改为静态
+dotnet_diagnostic.IDE0051.severity = none  # 私有成员未使用
+dotnet_diagnostic.CS0649.severity = none   # 字段未赋值（Inspector 赋值）
+
+#### ReSharper 规则 ####
 
 # 禁用命名空间与文件路径一致性检查（项目约定：命名空间从 Assets/ 下一级开始）
 resharper_csharp_inconsistent_naming = none
 resharper_check_namespace = false
 
+[*.md]
+trim_trailing_whitespace = false

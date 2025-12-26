@@ -1,0 +1,42 @@
+#!/bin/sh
+# Unity 项目 Commit Message Hook - 提交信息规范检查
+
+commit_msg_file=$1
+commit_msg=$(cat "$commit_msg_file")
+
+# 检查提交信息格式: <type>(<scope>): <description>
+# 支持的类型: feat, fix, refactor, docs, style, test, chore
+pattern="^(feat|fix|refactor|docs|style|test|chore)(\([a-z0-9]+\))?: .+"
+
+if ! echo "$commit_msg" | head -1 | grep -qE "$pattern"; then
+    echo ""
+    echo "❌ 错误: 提交信息格式不正确"
+    echo ""
+    echo "📝 正确格式: <type>(<scope>): <description>"
+    echo ""
+    echo "示例:"
+    echo "  feat(ui): 添加按钮缩放反馈"
+    echo "  fix(core): 修复资源加载空指针异常"
+    echo "  refactor(gameplay): 重构玩家移动逻辑"
+    echo ""
+    echo "支持的类型:"
+    echo "  feat     - 新功能"
+    echo "  fix      - Bug 修复"
+    echo "  refactor - 重构"
+    echo "  docs     - 文档更新"
+    echo "  style    - 代码格式"
+    echo "  test     - 测试相关"
+    echo "  chore    - 构建/工具链"
+    echo ""
+    exit 1
+fi
+
+# 检查描述是否包含中文
+description=$(echo "$commit_msg" | head -1 | sed -E 's/^[^:]+: //')
+if ! echo "$description" | grep -qP '[\p{Han}]' 2>/dev/null; then
+    echo "⚠️  警告: 提交描述建议使用中文（项目规范）"
+    echo "   当前描述: $description"
+fi
+
+echo "✅ 提交信息格式检查通过"
+exit 0

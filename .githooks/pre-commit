@@ -1,0 +1,73 @@
+#!/bin/sh
+# Unity 项目 Pre-commit Hook - 代码规范检查
+# 自动检查提交的代码是否符合项目规范
+
+echo "🔍 运行代码规范检查..."
+
+# 检查文件编码（UTF-8 without BOM）
+echo "  ✓ 检查文件编码"
+git diff --cached --name-only --diff-filter=ACM | grep -E '\.(cs|md|txt|json)$' | while read file; do
+    if [ -f "$file" ]; then
+        # 检查 UTF-8 BOM
+        if file "$file" 2>/dev/null | grep -q "with BOM"; then
+            echo "❌ 错误: $file 包含 BOM，请使用无 BOM 的 UTF-8 编码"
+            exit 1
+        fi
+    fi
+done || exit 1
+
+# 检查禁止的代码模式
+echo "  ✓ 检查禁止的代码模式"
+git diff --cached --name-only --diff-filter=ACM | grep '\.cs$' | while read file; do
+    if [ -f "$file" ]; then
+        # 检查协程（IEnumerator）- 排除已豁免的文件
+        if ! echo "$file" | grep -qE "(Test|Editor|Legacy)" ; then
+            if grep -qn "IEnumerator" "$file" 2>/dev/null; then
+                echo "❌ 错误: $file 使用了协程（IEnumerator）"
+                echo "   规范要求：禁止协程，全局统一改为 UniTask"
+                exit 1
+            fi
+        fi
+        
+        # 检查 async void
+        if grep -qn "async void" "$file" 2>/dev/null; then
+            echo "❌ 错误: $file 使用了 async void"
+            echo "   规范要求：禁止 async void，使用 async UniTask 或 UniTaskVoid"
+            grep -n "async void" "$file"
+            exit 1
+        fi
+        
+        # 检查 System.Threading.Tasks.Task
+        if grep -qn "System\.Threading\.Tasks\.Task" "$file" 2>/dev/null; then
+            echo "❌ 错误: $file 使用了 System.Threading.Tasks.Task"
+            echo "   规范要求：禁止使用 Task，统一使用 UniTask"
+            exit 1
+        fi
+        
+        # 检查空 catch (简单匹配)
+        if grep -Pzo "catch\s*\([^)]+\)\s*\{\s*\}" "$file" 2>/dev/null | grep -q .; then
+            echo "❌ 错误: $file 包含空 catch 块"
+            echo "   规范要求：禁止空 catch，必须记录日志后 throw"
+            exit 1
+        fi
+    fi
+done || exit 1
+
+# 检查直接调用 Addressables（排除 IAssetProvider 实现和 ConfigLoader）
+echo "  ✓ 检查 Addressables 使用规范"
+git diff --cached --name-only --diff-filter=ACM | grep '\.cs$' | while read file; do
+    if [ -f "$file" ]; then
+        # 排除允许的文件
+        if ! echo "$file" | grep -qE "(AssetProvider|ConfigLoader|Test|Editor)" ; then
+            if grep -qn "Addressables\.Load" "$file" 2>/dev/null; then
+                echo "❌ 错误: $file 直接调用了 Addressables.Load*"
+                echo "   规范要求：必须注入并使用 IAssetProvider 接口"
+                grep -n "Addressables\.Load" "$file"
+                exit 1
+            fi
+        fi
+    fi
+done || exit 1
+
+echo "✅ 代码规范检查通过"
+exit 0
