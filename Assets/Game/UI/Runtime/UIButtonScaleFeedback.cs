@@ -1,4 +1,5 @@
-using System.Collections;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -14,7 +15,7 @@ namespace Game.UI.Runtime
         [SerializeField] private float _durationSeconds = 0.08f;
 
         private Vector3 _baseScale;
-        private Coroutine _routine;
+        private CancellationTokenSource _tweenCts;
         private bool _hovering;
         private bool _pressed;
 
@@ -50,11 +51,9 @@ namespace Game.UI.Runtime
 
         private void OnDisable()
         {
-            if (_routine != null)
-            {
-                StopCoroutine(_routine);
-                _routine = null;
-            }
+            _tweenCts?.Cancel();
+            _tweenCts?.Dispose();
+            _tweenCts = null;
 
             transform.localScale = _baseScale;
             _hovering = false;
@@ -66,29 +65,37 @@ namespace Game.UI.Runtime
             var factor = _pressed ? _pressedScale : (_hovering ? _hoverScale : 1f);
             var target = _baseScale * factor;
 
-            if (_routine != null)
-            {
-                StopCoroutine(_routine);
-            }
+            // 取消之前的动画
+            _tweenCts?.Cancel();
+            _tweenCts?.Dispose();
+            _tweenCts = new CancellationTokenSource();
 
-            _routine = StartCoroutine(TweenScale(target));
+            // 启动新的 UniTask 动画
+            TweenScaleAsync(target, _tweenCts.Token).Forget();
         }
 
-        private IEnumerator TweenScale(Vector3 target)
+        private async UniTaskVoid TweenScaleAsync(Vector3 target, CancellationToken ct)
         {
             var start = transform.localScale;
             var t = 0f;
             var duration = Mathf.Max(0.01f, _durationSeconds);
 
-            while (t < 1f)
+            try
             {
-                t += Time.unscaledDeltaTime / duration;
-                transform.localScale = Vector3.Lerp(start, target, Mathf.Clamp01(t));
-                yield return null;
-            }
+                while (t < 1f)
+                {
+                    ct.ThrowIfCancellationRequested();
+                    t += Time.unscaledDeltaTime / duration;
+                    transform.localScale = Vector3.Lerp(start, target, Mathf.Clamp01(t));
+                    await UniTask.Yield(ct);
+                }
 
-            transform.localScale = target;
-            _routine = null;
+                transform.localScale = target;
+            }
+            catch (System.OperationCanceledException)
+            {
+                // 动画被取消，正常情况，不记录日志
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Core.Feature.Loading.Runtime;
 using Core.Runtime.Configuration;
 using Cysharp.Threading.Tasks;
@@ -42,7 +43,13 @@ namespace Game.Runtime.Startup
         [Tooltip("可选：LoadingHud 配置，为空则使用默认配置")]
         private LoadingHudConfig _loadingHudConfig;
 
-        private async void Start()
+        private void Start()
+        {
+            // 符合规范：避免 async void，使用 UniTask.Forget()
+            StartAsync(this.GetCancellationTokenOnDestroy()).Forget();
+        }
+
+        private async UniTask StartAsync(CancellationToken ct)
         {
             // 创建临时 LoadingService（用于显示配置加载进度）
             // 注意：由于 CoreLifetimeScope 尚未构建，这里传入 null 依赖是安全的（LoadingService 内部已做空检查）
@@ -59,8 +66,6 @@ namespace Game.Runtime.Startup
 
             try
             {
-                var ct = this.GetCancellationTokenOnDestroy();
-
                 //  阶段 1: 异步加载配置
                 // ========================================
 
