@@ -4,7 +4,6 @@ using System.Reflection;
 using Game.UI.Runtime;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
-using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 namespace Game.UI.Editor
@@ -37,7 +36,7 @@ namespace Game.UI.Editor
 
             // 获取 UIKeys 中所有定义的常量
             var uiKeys = GetAllUIKeys();
-            
+
             var missingKeys = new List<string>();
             var validKeys = new List<string>();
 
@@ -55,7 +54,7 @@ namespace Game.UI.Editor
 
             // 输出结果
             Debug.Log($"[UIKeys验证] ✅ 有效 Key：{validKeys.Count} 个");
-            
+
             if (missingKeys.Count > 0)
             {
                 Debug.LogWarning($"[UIKeys验证] ⚠️ 缺失 Key：{missingKeys.Count} 个");
@@ -80,7 +79,7 @@ namespace Game.UI.Editor
 
             // 获取嵌套类（Common, Screens 等）
             var nestedTypes = uiKeysType.GetNestedTypes(BindingFlags.Public | BindingFlags.Static);
-            
+
             foreach (var nestedType in nestedTypes)
             {
                 // 获取该嵌套类中的所有常量字段

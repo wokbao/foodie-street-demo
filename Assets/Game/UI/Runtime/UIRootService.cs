@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Game.UI.Runtime.Abstractions;
 using UnityEngine;

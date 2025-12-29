@@ -3,7 +3,6 @@ using System.Globalization;
 using TMPro;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
-using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using UnityEngine.UI;
 

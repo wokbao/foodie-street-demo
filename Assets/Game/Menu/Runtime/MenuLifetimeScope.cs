@@ -13,20 +13,28 @@ namespace Game.Menu.Runtime
     /// </summary>
     public sealed class MenuLifetimeScope : LifetimeScope, Core.Feature.SceneManagement.Abstractions.ISceneReadyHandler
     {
+        private Core.Feature.SceneManagement.Abstractions.ISceneReadyHandlerRegistry _handlerRegistry;
+
         protected override void Awake()
         {
             base.Awake();
-            // 静态注册，确保 SceneService 100% 能访问到
-            Core.Feature.SceneManagement.Runtime.SceneService.ActiveHandler = this;
-            UnityEngine.Debug.Log($"[MenuLifetimeScope] [帧:{UnityEngine.Time.frameCount}] 已注册为 ActiveHandler");
+
+            // 从父容器解析注册器（通过 DI 而非静态字段）
+            if (Parent != null && Parent.Container != null)
+            {
+                _handlerRegistry = Parent.Container.Resolve<Core.Feature.SceneManagement.Abstractions.ISceneReadyHandlerRegistry>();
+                _handlerRegistry?.Register(this);
+                UnityEngine.Debug.Log($"[MenuLifetimeScope] [帧:{UnityEngine.Time.frameCount}] 已通过 Registry 注册为 ActiveHandler");
+            }
+            else
+            {
+                UnityEngine.Debug.LogWarning("[MenuLifetimeScope] Parent 容器未就绪，无法注册 ISceneReadyHandler");
+            }
         }
 
         protected override void OnDestroy()
         {
-            if (Core.Feature.SceneManagement.Runtime.SceneService.ActiveHandler == (Core.Feature.SceneManagement.Abstractions.ISceneReadyHandler)this)
-            {
-                Core.Feature.SceneManagement.Runtime.SceneService.ActiveHandler = null;
-            }
+            _handlerRegistry?.Unregister(this);
             base.OnDestroy();
         }
 

@@ -1,7 +1,8 @@
 using Game.UI.Editor.Shared;
 using Game.UI.Runtime;
 using UnityEditor;
-using UnityEngine;using UnityEngine.UI;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Game.UI.Editor.Generators.Panels
 {

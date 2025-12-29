@@ -21,7 +21,7 @@ namespace Game.UI.Editor.Generators.Dialogs
             UIGeneratorUtility.EnsureFolder(Dir);
 
             var path = $"{Dir}/{FileName}";
-            
+
             var root = new GameObject("UI_DialogInfo", typeof(RectTransform));
             var rect = root.GetComponent<RectTransform>();
             rect.anchorMin = Vector2.zero;

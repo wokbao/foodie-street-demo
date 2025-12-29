@@ -76,7 +76,7 @@ namespace Game.Runtime.Loading
         [SerializeField] private RuntimeAnimatorController _logoAnimator;
 
         [Tooltip("Logo 显示位置（垂直方向，0=底部，1=顶部）")]
-        [SerializeField] [Range(0f, 1f)] private float _logoVerticalPosition = 0.7f;
+        [SerializeField][Range(0f, 1f)] private float _logoVerticalPosition = 0.7f;
 
         [Header("背景定制")]
         [Tooltip("可选：自定义背景 Sprite\n" +
@@ -99,10 +99,10 @@ namespace Game.Runtime.Loading
         [Tooltip("可选：加载时随机显示的提示文本列表\n" +
                  "美术/策划实现：每行一条提示（控制在 20 字以内）\n" +
                  "为空时不显示 Tips")]
-        [SerializeField] [TextArea(3, 10)] private string[] _loadingTips;
+        [SerializeField][TextArea(3, 10)] private string[] _loadingTips;
 
         [Tooltip("Tips 文本切换间隔（秒）")]
-        [SerializeField] [Range(1f, 10f)] private float _tipsSwitchInterval = 3f;
+        [SerializeField][Range(1f, 10f)] private float _tipsSwitchInterval = 3f;
 
         [Header("调试")]
         [Tooltip("显示调试信息（FPS、加载时间等）。")]

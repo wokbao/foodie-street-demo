@@ -45,7 +45,7 @@ namespace Game.Runtime.Startup
 
         private void Start()
         {
-            // 符合规范：避免 async void，使用 UniTask.Forget()
+            // 符合规范：使用 UniTask.Forget() 启动异步流程
             StartAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
@@ -119,7 +119,7 @@ namespace Game.Runtime.Startup
                         // 播放转场并加载
                         Debug.Log("[SplashBootstrapper] 委托 SceneService 加载主菜单...");
                         // 注意：LoadSceneAsync 内部默认 Single 模式
-                        await sceneService.LoadSceneAsync(_nextSceneName, true);
+                        await sceneService.LoadSceneAsync(_nextSceneName, true, null, ct);
                     }
                     else
                     {

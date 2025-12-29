@@ -49,5 +49,8 @@ dotnet_diagnostic.CS0649.severity = none   # 字段未赋值（Inspector 赋值�
 resharper_csharp_inconsistent_naming = none
 resharper_check_namespace = false
 
+# 允许常用缩写词保持大写（UI、IO、ID 等）
+resharper_abbreviations = UI, IO, ID, API, URL, HTTP, HTML, JSON, XML, SQL, DB
+
 [*.md]
 trim_trailing_whitespace = false

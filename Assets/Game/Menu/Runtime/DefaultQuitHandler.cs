@@ -1,7 +1,6 @@
 using Core.Feature.Logging.Abstractions;
 using Cysharp.Threading.Tasks;
 using Game.Menu.Runtime.Abstractions;
-using Game.UI.Runtime;
 using Game.UI.Runtime.Abstractions;
 using UnityEngine;
 

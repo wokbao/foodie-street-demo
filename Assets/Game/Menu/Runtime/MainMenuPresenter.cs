@@ -5,11 +5,9 @@ using Core.Feature.Loading.Abstractions;
 using Core.Feature.SceneManagement.Abstractions;
 using Cysharp.Threading.Tasks;
 using Game.Menu.Runtime.Abstractions;
-using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 #if UNITY_EDITOR
-using UnityEditor;
 #endif
 
 namespace Game.Menu.Runtime
@@ -88,7 +86,7 @@ namespace Game.Menu.Runtime
             {
                 _logService?.Information(LogCategory.Menu, $"[主菜单] 开始加载场景：{_view.StartSceneKey}");
                 var progress = _loadingService?.CreateProgressReporter("加载场景");
-                await _sceneService.LoadSceneAsync(_view.StartSceneKey, _view.UseLoadingScreen, progress);
+                await _sceneService.LoadSceneAsync(_view.StartSceneKey, _view.UseLoadingScreen, progress, token);
             }
             catch (Exception ex)
             {

@@ -21,7 +21,7 @@ namespace Game.UI.Editor.Generators.Dialogs
             UIGeneratorUtility.EnsureFolder(Dir);
 
             var path = $"{Dir}/{FileName}";
-            
+
             // 创建根节点
             var root = new GameObject("UI_DialogConfirm", typeof(RectTransform));
             var rect = root.GetComponent<RectTransform>();

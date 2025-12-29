@@ -1,6 +1,5 @@
 using Game.UI.Editor.Shared;
 using Game.UI.Runtime;
-using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
