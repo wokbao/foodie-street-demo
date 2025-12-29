@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using Core.Feature.Loading.Abstractions;
+using Core.Feature.Logging.Abstractions;
 using Cysharp.Threading.Tasks;
 using Game.Runtime.Loading.Abstractions;
 using UnityEngine;
@@ -15,10 +16,13 @@ namespace Game.Runtime.Loading
     /// </summary>
     public sealed class LoadingHud : MonoBehaviour, ILoadingView
     {
+        // 降级默认值：用于 SplashBootstrapper 在配置加载前创建临时 HUD 的场景。
+        // 正式场景下，SortingOrder 应通过 UIHierarchyConfig.LoadingSortingOrder 配置。
         private const int DefaultSortingOrder = 8000;
 
         private LoadingHudConfig _config;
         private ILoadingService _loadingService;
+        private ILogService _logService;
         private CanvasGroup _canvasGroup;
         private Canvas _canvas;
         private bool _usingExternalCanvas;
@@ -31,10 +35,11 @@ namespace Game.Runtime.Loading
 
         public bool IsVisible => _isVisible;
 
-        public void Initialize(ILoadingService loadingService, LoadingHudConfig config = null, Canvas externalCanvas = null)
+        public void Initialize(ILoadingService service, LoadingHudConfig config = null, Canvas externalCanvas = null, ILogService logService = null)
         {
-            _loadingService = loadingService ?? throw new ArgumentNullException(nameof(loadingService), "加载服务不能为 null");
+            _loadingService = service ?? throw new ArgumentNullException(nameof(service), "加载服务不能为 null");
             _config = config;
+            _logService = logService;
             _usingExternalCanvas = externalCanvas != null;
             _canvas = externalCanvas;
 
@@ -346,7 +351,10 @@ namespace Game.Runtime.Loading
             }
             catch (Exception ex)
             {
-                Debug.LogError($"显示加载 HUD 时发生错误：{ex.Message}");
+                if (_logService != null)
+                    _logService.Error(LogCategory.UI, $"显示加载 HUD 时发生错误：{ex.Message}", ex);
+                else
+                    Debug.LogError($"显示加载 HUD 时发生错误：{ex.Message}");
                 _isVisible = false;
             }
         }
@@ -380,7 +388,10 @@ namespace Game.Runtime.Loading
             }
             catch (Exception ex)
             {
-                Debug.LogError($"隐藏加载 HUD 时发生错误：{ex.Message}");
+                if (_logService != null)
+                    _logService.Error(LogCategory.UI, $"隐藏加载 HUD 时发生错误：{ex.Message}", ex);
+                else
+                    Debug.LogError($"隐藏加载 HUD 时发生错误：{ex.Message}");
                 HideInstant();
                 _isVisible = false;
             }

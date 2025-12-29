@@ -1,5 +1,6 @@
 using System;
 using Core.Feature.Loading.Abstractions;
+using Core.Feature.Logging.Abstractions;
 using UnityEngine;
 
 namespace Game.Runtime.Loading.Abstractions
@@ -16,7 +17,8 @@ namespace Game.Runtime.Loading.Abstractions
         /// <param name="service">加载服务</param>
         /// <param name="config">配置（可选）</param>
         /// <param name="externalCanvas">外部 Canvas（可选，如果提供则不创建独立 Canvas）</param>
-        void Initialize(ILoadingService service, LoadingHudConfig config = null, Canvas externalCanvas = null);
+        /// <param name="logService">日志服务（可选）</param>
+        void Initialize(ILoadingService service, LoadingHudConfig config = null, Canvas externalCanvas = null, ILogService logService = null);
 
         /// <summary>
         /// 设置进度（0-1）。

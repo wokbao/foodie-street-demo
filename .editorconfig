@@ -13,16 +13,28 @@ indent_size = 4
 
 #### Naming styles ####
 
-# 私有字段必须以下划线开头（强制执行）
+# 私有字段必须以下划线开头（强制执行，排除 const 常量）
 dotnet_naming_rule.private_instance_fields_should_begin_with_underscore.severity = error
 dotnet_naming_rule.private_instance_fields_should_begin_with_underscore.symbols = private_instance_fields
 dotnet_naming_rule.private_instance_fields_should_begin_with_underscore.style = private_instance_fields_style
 
 dotnet_naming_symbols.private_instance_fields.applicable_kinds = field
 dotnet_naming_symbols.private_instance_fields.applicable_accessibilities = private
+dotnet_naming_symbols.private_instance_fields.required_modifiers = 
 
 dotnet_naming_style.private_instance_fields_style.capitalization = camel_case
 dotnet_naming_style.private_instance_fields_style.required_prefix = _
+
+# 常量使用 PascalCase（const 字段）
+dotnet_naming_rule.constants_should_be_pascal_case.severity = suggestion
+dotnet_naming_rule.constants_should_be_pascal_case.symbols = constants
+dotnet_naming_rule.constants_should_be_pascal_case.style = pascal_case_style
+
+dotnet_naming_symbols.constants.applicable_kinds = field
+dotnet_naming_symbols.constants.applicable_accessibilities = *
+dotnet_naming_symbols.constants.required_modifiers = const
+
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
 
 #### 代码质量规则 ####
 
@@ -38,6 +50,9 @@ dotnet_diagnostic.CA2200.severity = error
 
 #### Unity 特殊处理 ####
 
+# 禁用命名空间与文件路径一致性检查（项目约定：命名空间从 Assets/ 下一级开始）
+dotnet_diagnostic.IDE0130.severity = none
+
 # Unity MonoBehaviour 生命周期方法
 dotnet_diagnostic.CA1822.severity = none  # 方法可改为静态
 dotnet_diagnostic.IDE0051.severity = none  # 私有成员未使用
@@ -50,7 +65,7 @@ resharper_csharp_inconsistent_naming = none
 resharper_check_namespace = false
 
 # 允许常用缩写词保持大写（UI、IO、ID 等）
-resharper_abbreviations = UI, IO, ID, API, URL, HTTP, HTML, JSON, XML, SQL, DB
+resharper_abbreviations = UI, IO, ID, API, URL, HTTP, HTML, JSON, XML, SQL, DB, HUD
 
 [*.md]
 trim_trailing_whitespace = false
