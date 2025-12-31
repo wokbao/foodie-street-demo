@@ -27,3 +27,10 @@ MonoBehaviour:
     Priority: 0
     DevOnly: 0
     ProductionOnly: 0
+  - Name: AudioConfig
+    AddressableKey: Game/Configs/AudioConfig
+    ConfigTypeName: Game.Audio.Runtime.AudioConfig, Game
+    IsRequired: 1
+    Priority: 0
+    DevOnly: 0
+    ProductionOnly: 0

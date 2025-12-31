@@ -77,6 +77,7 @@ namespace Game.Menu.Runtime
                 var loadingService = _resolver.Resolve<ILoadingService>();
                 var navigationService = _resolver.Resolve<IMenuNavigationService>();
                 var quitHandler = _resolver.Resolve<IQuitHandler>();
+                var audioService = _resolver.Resolve<Game.Audio.Runtime.IAudioService>();
 
                 _presenter = new MainMenuPresenter(
                     view,
@@ -84,7 +85,8 @@ namespace Game.Menu.Runtime
                     loadingService,
                     navigationService,
                     quitHandler,
-                    _logService);
+                    _logService,
+                    audioService);
                 _presenter.Initialize();
 
                 // 关键：等待几帧，确保 Canvas 完成重建和渲染

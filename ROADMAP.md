@@ -114,13 +114,13 @@
 ---
 
 ## 🎮 Phase 2: Game 层业务服务
-### 音频管理（优先级：高）
-- [ ] 定义 `IAudioService` 接口
-- [ ] BGM 播放系统
-- [ ] 音效系统
-- [ ] 音量控制
-- [ ] 音频池化
-- [ ] 在 `GameLifetimeScope` 中注册
+### 音频管理（优先级：高）✅
+- [x] 定义 `IAudioService` 接口
+- [x] BGM 播放系统（淡入淡出支持）
+- [x] 音效系统（2D/3D SFX）
+- [x] 音量控制（分通道、响应式）
+- [x] AudioSource 管理
+- [x] 在 `GameLifetimeScope` 中注册
 
 ### 玩家数据管理（优先级：高）
 - [ ] 定义 `IPlayerDataService` 接口

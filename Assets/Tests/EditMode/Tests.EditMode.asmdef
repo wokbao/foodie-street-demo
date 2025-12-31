@@ -2,7 +2,8 @@
     "name": "Tests.EditMode",
     "rootNamespace": "Tests.EditMode",
     "references": [
-        "Core"
+        "Core",
+        "Game"
     ],
     "includePlatforms": [
         "Editor"

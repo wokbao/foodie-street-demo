@@ -4,6 +4,7 @@ using Core.Feature.Logging.Abstractions;
 using Core.Feature.Loading.Abstractions;
 using Core.Feature.SceneManagement.Abstractions;
 using Cysharp.Threading.Tasks;
+using Game.Audio.Runtime;
 using Game.Menu.Runtime.Abstractions;
 using VContainer;
 using VContainer.Unity;
@@ -24,6 +25,7 @@ namespace Game.Menu.Runtime
         private readonly IMenuNavigationService _navigationService;
         private readonly IQuitHandler _quitHandler;
         private readonly ILogService _logService;
+        private readonly IAudioService _audioService;
 
         private bool _isLoading;
 
@@ -34,7 +36,8 @@ namespace Game.Menu.Runtime
             ILoadingService loadingService,
             IMenuNavigationService navigationService,
             IQuitHandler quitHandler,
-            ILogService logService)
+            ILogService logService,
+            IAudioService audioService)
         {
             _view = view;
             _sceneService = sceneService;
@@ -42,6 +45,7 @@ namespace Game.Menu.Runtime
             _navigationService = navigationService;
             _quitHandler = quitHandler;
             _logService = logService;
+            _audioService = audioService;
         }
 
         public void Initialize()
@@ -49,6 +53,22 @@ namespace Game.Menu.Runtime
             _view.PlayClicked += OnPlayClicked;
             _view.SettingsClicked += OnSettingsClicked;
             _view.QuitClicked += OnQuitClicked;
+
+            // 播放主菜单 BGM
+            PlayMenuBGMAsync().Forget();
+        }
+
+        private async UniTaskVoid PlayMenuBGMAsync()
+        {
+            try
+            {
+                await _audioService.PlayBGMAsync("Audio/BGM/bgm_menu", fadeInDuration: 1.0f);
+                _logService?.Information(LogCategory.Menu, "[主菜单] BGM 开始播放");
+            }
+            catch (Exception ex)
+            {
+                _logService?.Warning(LogCategory.Menu, $"[主菜单] BGM 播放失败：{ex.Message}");
+            }
         }
 
         public void Dispose()

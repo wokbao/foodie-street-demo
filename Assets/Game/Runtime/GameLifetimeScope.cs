@@ -1,4 +1,5 @@
 using Core.Runtime.Configuration;
+using Game.Audio.Runtime;
 using Game.Runtime.Configs;
 using Game.Runtime.Loading;
 using Game.UI.Runtime;
@@ -103,12 +104,12 @@ namespace Game.Runtime
             // - 经济平衡和防作弊
             // builder.Register<IEconomyService, EconomyService>(Lifetime.Singleton);
 
-            // TODO: 音频管理（AudioService / AudioManager）
+            // 音频管理（AudioService）
             // - BGM 播放与切换
             // - 音效播放与管理
             // - 音量控制、淡入淡出
-            // - 音频池化
-            // builder.Register<IAudioService, AudioService>(Lifetime.Singleton);
+            builder.RegisterEntryPoint<AudioService>(Lifetime.Singleton)
+                .As<IAudioService>();
 
             // TODO: 成就系统（AchievementService）
             // - 成就解锁与追踪
