@@ -1,5 +1,32 @@
 # 🍪 Foodie Street 开发日志
 
+## 2026-01-04 (周六)
+
+### 完成的工作
+- ✅ **音频系统 3A 标准改进**
+  - 创建 `AudioKeys` 常量类，消除音频 Key 魔法字符串
+  - 创建 `UIButtonSound` 组件，实现 UI 按钮音效解耦
+  - 实现 AudioSource 对象池复用（通过 `IObjectPoolManager`）
+  - 更新 `MainMenuPresenter` 使用新的音频常量
+- ✅ **场景加载系统修复**
+  - 修复首次场景加载时的 "Unloading the last loaded scene" 错误
+  - `SceneService` 首次加载使用 Additive 模式，避免卸载唯一场景
+  - 加载完成后手动卸载旧场景，保持后续 Single 模式正常工作
+- ✅ **代码审查优化**
+  - 移除未使用的 `channel` 参数
+  - 修复 `AudioService` 注册方式（`RegisterEntryPoint` 确保 `IStartable` 调用）
+
+### 架构改进
+- **AudioKeys 常量管理**：所有音频 Key 集中管理，避免魔法字符串
+- **UIButtonSound 组件化**：Presenter 无需关心 SFX 播放，组件自动处理
+- **场景加载健壮性**：自动检测场景状态，选择正确的加载模式
+
+### 下一步计划
+- [ ] 关注 AudioMixer 集成需求
+- [ ] 考虑 SFX 变体系统（随机音高/多剪辑）
+
+---
+
 ## 2025-12-26 (周五)
 
 ### 完成的工作

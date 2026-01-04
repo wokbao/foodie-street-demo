@@ -31,6 +31,7 @@
 - [x] 场景切换事件钩子（开始/完成，便于 UI/音频订阅）
 - [ ] （可选）过渡配置远程/环境覆盖：加入 ConfigManifest 可选项，`IValidatableConfig` 校验，加载失败回退本地默认；保留 Inspector 直引用兜底
 - [x] 编写单元测试（SceneServiceTest.cs）
+- [x] 修复首次场景加载卸载错误（Additive 模式回退）
 
 ### 加载系统 / Loading System（优先级：高）✅ 企业级重构完成
 - [x] 定义 `ILoadingService` 接口
@@ -119,8 +120,10 @@
 - [x] BGM 播放系统（淡入淡出支持）
 - [x] 音效系统（2D/3D SFX）
 - [x] 音量控制（分通道、响应式）
-- [x] AudioSource 管理
+- [x] AudioSource 管理与对象池复用
 - [x] 在 `GameLifetimeScope` 中注册
+- [x] AudioKeys 常量类（消除魔法字符串）
+- [x] UIButtonSound 组件（UI 音效解耦）
 
 ### 玩家数据管理（优先级：高）
 - [ ] 定义 `IPlayerDataService` 接口
@@ -371,5 +374,5 @@
 
 ---
 
-**最后更新**：2025-12-25  
+**最后更新**：2026-01-04  
 **当前版本**：v0.1.0-dev
