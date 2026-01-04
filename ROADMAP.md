@@ -33,6 +33,13 @@
 - [x] 编写单元测试（SceneServiceTest.cs）
 - [x] 修复首次场景加载卸载错误（Additive 模式回退）
 
+### 国际化系统 / Localization（优先级：高）
+- [x] 定义 `ILocalizationService` 接口
+- [x] 实现基础 `LocalizationService` (透传模式)
+- [x] 在 `CoreLifetimeScope` 中注册
+- [ ] 接入真实本地化数据源 (CSV/ScriptableObject)
+- [ ] 文本替换逻辑 (string.Format)
+
 ### 加载系统 / Loading System（优先级：高）✅ 企业级重构完成
 - [x] 定义 `ILoadingService` 接口
 - [x] 实现加载进度追踪

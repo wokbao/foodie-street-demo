@@ -219,6 +219,13 @@ throw new Exception("Scene load failed");
 - 包括所有异常消息 `throw new Exception(...)`
 - 注释可以用英文，但面向用户的信息必须中文
 
+### 国际化与常量规范
+- **禁止硬编码 UI 文本**：所有面向用户的 UI 文本必须通过 `ILocalizationService` 获取。
+- **禁止魔法字符串**：关键标识符（如 Key、State Name）必须定义为 `public const string`。
+
+
+
+
 ### 文档同步规范
 **每次代码修改后，必须同步更新以下文档**：
 1. **DEV_NOTES.md** - 记录当日工作内容和技术决策

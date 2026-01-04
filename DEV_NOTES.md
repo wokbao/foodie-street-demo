@@ -574,3 +574,16 @@ Assets/Core/
 1. 更新本文档
 2. 更新 ROADMAP.md 勾选完成的任务
 3. 写清楚 Git commit message
+
+## 2026-01-04 项目规范与国际化重构
+- **规范升级**：
+  - 更新项目规范 (`rules.md`)，新增国际化、常量约束、单元测试和文档注释要求。
+  - 明确 **UI 文本必须本地化**，**日志必须中文**。
+  - 明确 **禁止魔法字符串**，统一使用 `public const string`。
+- **Core 层基础设施**：
+  - **Localization**：新增 `ILocalizationService` 及其默认实现 `LocalizationService`（目前为透传模式）。
+  - **Constants**：新增 `CoreLoadingPhases`，统一管理加载阶段名称。
+- **SceneService 重构**：
+  - 移除 `SceneService` 和 `LoadingService` 交互中所有硬编码的 UI 字符串。
+  - 接入 `ILocalizationService` 和 `CoreLoadingPhases`。
+  - 补充核心逻辑（两阶段加载）的 `<remarks>` 文档。
