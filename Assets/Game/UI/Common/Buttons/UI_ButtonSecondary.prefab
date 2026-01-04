@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3306482959566082764}
   - component: {fileID: 1970466966984932524}
   - component: {fileID: 178481711318154586}
+  - component: {fileID: 3234709846243633290}
   m_Layer: 0
   m_Name: UI_ButtonSecondary
   m_TagString: Untagged
@@ -137,6 +138,21 @@ MonoBehaviour:
   _hoverScale: 1.02
   _pressedScale: 0.98
   _durationSeconds: 0.08
+--- !u!114 &3234709846243633290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2868679878189358450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c976db655638a524a9f2f1424c5b41ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _clickSoundKey: 
+  _volume: 1
+  _enabled: 1
 --- !u!1 &7280167753223977902
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,7 +227,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4281545523
   m_fontColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -224,7 +240,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
