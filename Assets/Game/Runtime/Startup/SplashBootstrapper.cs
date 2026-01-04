@@ -118,8 +118,10 @@ namespace Game.Runtime.Startup
                     {
                         // 播放转场并加载
                         Debug.Log("[SplashBootstrapper] 委托 SceneService 加载主菜单...");
-                        // 注意：LoadSceneAsync 内部默认 Single 模式
-                        await sceneService.LoadSceneAsync(_nextSceneName, true, null, ct);
+                        // 注意：不传递 ct，因为 SplashBootstrapper 会在场景切换过程中被销毁，
+                        // 其 GetCancellationTokenOnDestroy() 会触发取消，导致场景加载被错误中断。
+                        // 场景加载应该由 SceneService 自己管理生命周期。
+                        await sceneService.LoadSceneAsync(_nextSceneName, true);
                     }
                     else
                     {
@@ -169,9 +171,13 @@ namespace Game.Runtime.Startup
                 // Unsubscribe and cleanup in case activeSceneChanged didn't fire (defensive)
                 SceneManager.activeSceneChanged -= OnActiveSceneChanged;
 
-                // 清理临时对象 (Fallback)
+                // 清理临时对象 - 先 Dispose 取消异步操作，再 Destroy
                 loadingService?.Dispose();
-                if (hudGo != null)
+                if (hud != null)
+                {
+                    hud.Dispose(); // 这会取消所有异步操作并销毁 GameObject
+                }
+                else if (hudGo != null)
                 {
                     Destroy(hudGo);
                 }
@@ -187,7 +193,16 @@ namespace Game.Runtime.Startup
             var hudGo = GameObject.Find("LoadingHud_Temp");
             if (hudGo != null)
             {
-                Destroy(hudGo);
+                // 先通过 Dispose 取消异步操作，避免销毁后访问
+                var hud = hudGo.GetComponent<LoadingHud>();
+                if (hud != null)
+                {
+                    hud.Dispose(); // 这会取消异步操作并销毁 GameObject
+                }
+                else
+                {
+                    Destroy(hudGo);
+                }
             }
 
             // Unsubscribe immediately

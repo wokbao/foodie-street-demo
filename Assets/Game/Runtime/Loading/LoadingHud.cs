@@ -14,6 +14,9 @@ namespace Game.Runtime.Loading
     /// 用于临时展示进度、描述和旋转动画。
     /// 如需美术版样式，可创建实现 ILoadingView 的预制体版本。
     /// </summary>
+    /// <remarks>
+    /// 所有异步操作使用销毁取消令牌（<see cref="DestroyCt"/>），确保在 MonoBehaviour 销毁时自动取消。
+    /// </remarks>
     public sealed class LoadingHud : MonoBehaviour, ILoadingView
     {
         // 降级默认值：用于 SplashBootstrapper 在配置加载前创建临时 HUD 的场景。
@@ -30,8 +33,12 @@ namespace Game.Runtime.Loading
         private Text _descriptionText;
         private RectTransform _spinner;
         private CancellationTokenSource _showCts;
-        private CancellationTokenSource _fadeCts;
         private bool _isVisible;
+
+        /// <summary>
+        /// 获取销毁取消令牌（兼容旧版 Unity）
+        /// </summary>
+        private CancellationToken DestroyCt => this.GetCancellationTokenOnDestroy();
 
         public bool IsVisible => _isVisible;
 
@@ -59,25 +66,22 @@ namespace Game.Runtime.Loading
             _showCts?.Cancel();
             _showCts?.Dispose();
             _showCts = null;
-
-            _fadeCts?.Cancel();
-            _fadeCts?.Dispose();
-            _fadeCts = null;
-
-            HideInstant();
         }
 
         private void Update()
         {
-            if (_spinner != null && _spinner.gameObject.activeSelf)
-            {
-                float rotationSpeed = _config?.SpinnerRotationSpeed ?? 180f;
-                _spinner.Rotate(Vector3.forward, -rotationSpeed * Time.unscaledDeltaTime);
-            }
+            // destroyCancellationToken 在销毁时会被取消，此时访问 _spinner 是安全的
+            if (_spinner == null || !_spinner.gameObject.activeSelf) return;
+
+            float rotationSpeed = _config?.SpinnerRotationSpeed ?? 180f;
+            _spinner.Rotate(Vector3.forward, -rotationSpeed * Time.unscaledDeltaTime);
         }
 
         private void OnStateChanged(LoadingState state)
         {
+            // 使用 destroyCancellationToken 检查是否已销毁
+            if (DestroyCt.IsCancellationRequested) return;
+
             // 只在 ShouldShowUi 为 true (有前台阻塞任务) 时才显示 HUD
             var active = state.ShouldShowUi;
 
@@ -86,7 +90,7 @@ namespace Game.Runtime.Loading
                 if (_showCts == null || _showCts.IsCancellationRequested)
                 {
                     _showCts?.Dispose();
-                    _showCts = new CancellationTokenSource();
+                    _showCts = CancellationTokenSource.CreateLinkedTokenSource(DestroyCt);
                     ShowWithDelayAsync(_showCts.Token).Forget();
                 }
             }
@@ -96,7 +100,7 @@ namespace Game.Runtime.Loading
                 _showCts?.Dispose();
                 _showCts = null;
 
-                HideWithFadeAsync(this.GetCancellationTokenOnDestroy()).Forget();
+                HideWithFadeAsync(DestroyCt).Forget();
             }
 
             if (_progressBar != null)
@@ -140,7 +144,7 @@ namespace Game.Runtime.Loading
             if (_showCts == null || _showCts.IsCancellationRequested)
             {
                 _showCts?.Dispose();
-                _showCts = new CancellationTokenSource();
+                _showCts = CancellationTokenSource.CreateLinkedTokenSource(DestroyCt);
                 ShowWithDelayAsync(_showCts.Token).Forget();
             }
         }
@@ -151,7 +155,7 @@ namespace Game.Runtime.Loading
             _showCts?.Dispose();
             _showCts = null;
 
-            HideWithFadeAsync(this.GetCancellationTokenOnDestroy()).Forget();
+            HideWithFadeAsync(DestroyCt).Forget();
         }
 
         public void Dispose()
@@ -164,10 +168,6 @@ namespace Game.Runtime.Loading
             _showCts?.Cancel();
             _showCts?.Dispose();
             _showCts = null;
-
-            _fadeCts?.Cancel();
-            _fadeCts?.Dispose();
-            _fadeCts = null;
 
             HideInstant();
 
@@ -399,7 +399,7 @@ namespace Game.Runtime.Loading
 
         private async UniTask FadeToAsync(float targetAlpha, float duration, CancellationToken ct)
         {
-            if (_canvasGroup == null) return;
+            if (_canvasGroup == null || ct.IsCancellationRequested) return;
             if (duration <= 0f)
             {
                 _canvasGroup.alpha = targetAlpha;
@@ -411,16 +411,21 @@ namespace Game.Runtime.Loading
 
             while (elapsed < duration)
             {
-                if (ct.IsCancellationRequested) return;
+                ct.ThrowIfCancellationRequested();
 
                 elapsed += Time.unscaledDeltaTime;
                 float t = Mathf.Clamp01(elapsed / duration);
+
+                if (_canvasGroup == null) return;
                 _canvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, t);
 
                 await UniTask.Yield(PlayerLoopTiming.Update, ct);
             }
 
-            _canvasGroup.alpha = targetAlpha;
+            if (_canvasGroup != null)
+            {
+                _canvasGroup.alpha = targetAlpha;
+            }
         }
 
         private void HideInstant()

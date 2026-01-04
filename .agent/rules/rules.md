@@ -2,7 +2,7 @@
 trigger: always_on
 ---
 
-# 项目规则
+# 项目规则 (Project Rules)
 
 > **System Instruction**: You MUST strictly adhere to these rules. Deviating from the "Forbidden" rules is considered a critical error.
 
@@ -24,15 +24,23 @@ trigger: always_on
 ### 异常处理
 - 使用语义化异常类型（`ArgumentNullException`、`InvalidOperationException`）
 - **禁止空 catch**，必须记录日志后 `throw;`（保留堆栈）
+- **OperationCanceledException**：在资源清理/取消流程中应被捕获并记录为 Info/Debug（不作为错误），除非是必须中断的关键流程。
 
 ### Unity 生命周期
 - 优先使用 **Plain C# 类 + VContainer**，仅 View/Collider 组件继承 `MonoBehaviour`
 - **禁止协程 (IEnumerator)**，全局统一改为 **UniTask**
 
 ## ⚡ 技术栈
-### UniTask (异步)
+### UniTask (异步与取消)
 - **强制使用**，禁止 `System.Threading.Tasks.Task`
-- 所有异步 API (async) 必须接受 `CancellationToken`
+- **统一取消模式**：
+  - 所有持有异步状态的类（Service/Controller）必须维护 `CancellationTokenSource _cts`。
+  - `Dispose()` 中必须调用 `_cts.Cancel()` 和 `_cts.Dispose()`。
+- **禁止保护性检查**：
+  - 禁止在 `Dispose` 或异步连续调用中使用 `if (!Application.isPlaying)` 或 `if (go == null)` 来掩盖生命周期问题。
+  - 必须使用 `CancellationToken` 提前退出或处理 `OperationCanceledException`。
+- **链接令牌**：
+  - 接受外部 `CancellationToken` 的方法，通常应使用 `CancellationTokenSource.CreateLinkedTokenSource(externalCt, _internalCts.Token)` 链接内部生命周期。
 - Fire‑and‑Forget 必须调用 `.Forget()` 扩展方法
 
 ### R3 (响应式)
@@ -82,17 +90,30 @@ public class BadManager : MonoBehaviour {
 }
 ```
 
-### ✅ 资源加载 (Safe Asset Loading)
+### ✅ 资源加载与取消 (Safe Asset Loading & Cancellation)
 ```csharp
 // [Good]
-try {
-    var prefab = await _assetProvider.LoadAssetAsync<GameObject>("Hero", _cts.Token);
-} catch (OperationCanceledException) {
-    // 正常取消，仅 LogWarning 或忽略
+public async UniTask DoWorkAsync(CancellationToken externalCt) {
+    // 链接外部取消请求与内部生命周期
+    using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(externalCt, _cts.Token);
+    var ct = linkedCts.Token;
+
+    try {
+        ct.ThrowIfCancellationRequested(); // 早期检查
+        var prefab = await _assetProvider.LoadAssetAsync<GameObject>("Hero", ct);
+    } catch (OperationCanceledException) {
+        // 优雅退出，不报 Error
+        _logService.Debug("操作已取消");
+    }
 }
 
 // [Bad]
-Addressables.LoadAssetAsync<GameObject>("Hero"); // 禁止直接调用
+public async UniTask DoWorkAsync() {
+    // 禁止依赖 isPlaying 检查
+    if (!Application.isPlaying) return; 
+    
+    var prefab = await Addressables.LoadAssetAsync<GameObject>("Hero"); // 禁止直接调用
+}
 ```
 
 ### ✅ 响应式订阅 (R3 Safety)
