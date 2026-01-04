@@ -5,6 +5,7 @@ using Core.Feature.AssetManagement.Runtime;
 using Core.Feature.Logging.Abstractions;
 using Core.Feature.ObjectPooling.Abstractions;
 using Cysharp.Threading.Tasks;
+using Game.Audio.Runtime.Abstractions;
 using R3;
 using UnityEngine;
 using VContainer.Unity;

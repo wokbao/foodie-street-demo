@@ -5,6 +5,7 @@ using Core.Feature.Loading.Abstractions;
 using Core.Feature.SceneManagement.Abstractions;
 using Cysharp.Threading.Tasks;
 using Game.Audio.Runtime;
+using Game.Audio.Runtime.Abstractions;
 using Game.Menu.Runtime.Abstractions;
 using VContainer;
 using VContainer.Unity;

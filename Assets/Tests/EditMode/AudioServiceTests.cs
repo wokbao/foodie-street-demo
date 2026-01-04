@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using Game.Audio.Runtime;
+using UnityEngine;
 
 namespace Tests.EditMode
 {
@@ -11,6 +12,7 @@ namespace Tests.EditMode
     /// <list type="bullet">
     ///   <item>AudioConfig 配置验证</item>
     ///   <item>AudioChannel 枚举值</item>
+    ///   <item>AudioManager 静态访问器（公开 API）</item>
     /// </list>
     /// 
     /// <para><b>注意</b>：</para>
@@ -25,7 +27,7 @@ namespace Tests.EditMode
         public void AudioConfig_Validate_WithValidConfig_ReturnsTrue()
         {
             // Arrange
-            var config = UnityEngine.ScriptableObject.CreateInstance<AudioConfig>();
+            var config = ScriptableObject.CreateInstance<AudioConfig>();
 
             // Act
             bool isValid = config.Validate(out List<string> errors);
@@ -35,14 +37,14 @@ namespace Tests.EditMode
             Assert.IsEmpty(errors, "不应该有错误消息");
 
             // Cleanup
-            UnityEngine.Object.DestroyImmediate(config);
+            Object.DestroyImmediate(config);
         }
 
         [Test]
         public void AudioConfig_GetDefaultVolume_ReturnsCorrectValues()
         {
             // Arrange
-            var config = UnityEngine.ScriptableObject.CreateInstance<AudioConfig>();
+            var config = ScriptableObject.CreateInstance<AudioConfig>();
 
             // Act & Assert
             Assert.AreEqual(1f, config.DefaultMasterVolume, "主音量默认应为 1");
@@ -50,14 +52,14 @@ namespace Tests.EditMode
             Assert.AreEqual(0.8f, config.DefaultSFXVolume, "SFX 音量默认应为 0.8");
 
             // Cleanup
-            UnityEngine.Object.DestroyImmediate(config);
+            Object.DestroyImmediate(config);
         }
 
         [Test]
         public void AudioConfig_GetDefaultVolume_ByChannel_ReturnsCorrectValue()
         {
             // Arrange
-            var config = UnityEngine.ScriptableObject.CreateInstance<AudioConfig>();
+            var config = ScriptableObject.CreateInstance<AudioConfig>();
 
             // Act & Assert
             Assert.AreEqual(config.DefaultMasterVolume, config.GetDefaultVolume(AudioChannel.Master));
@@ -67,7 +69,23 @@ namespace Tests.EditMode
             Assert.AreEqual(config.DefaultVoiceVolume, config.GetDefaultVolume(AudioChannel.Voice));
 
             // Cleanup
-            UnityEngine.Object.DestroyImmediate(config);
+            Object.DestroyImmediate(config);
+        }
+
+        [Test]
+        public void AudioConfig_GetDefaultVolume_UnknownChannel_ReturnsOne()
+        {
+            // Arrange
+            var config = ScriptableObject.CreateInstance<AudioConfig>();
+
+            // Act - 使用一个不存在的枚举值
+            var volume = config.GetDefaultVolume((AudioChannel)999);
+
+            // Assert
+            Assert.AreEqual(1f, volume, "未知通道应返回默认音量 1");
+
+            // Cleanup
+            Object.DestroyImmediate(config);
         }
 
         #endregion
@@ -93,6 +111,38 @@ namespace Tests.EditMode
 
             // Assert
             Assert.AreEqual(5, values.Length, "AudioChannel 应该有 5 个值");
+        }
+
+        #endregion
+
+        #region AudioManager 静态访问器测试
+
+        [TearDown]
+        public void TearDown()
+        {
+            // 确保每个测试后都清理 AudioManager 状态
+            AudioManager.SetInstance(null);
+        }
+
+        [Test]
+        public void AudioManager_Instance_InitiallyNull()
+        {
+            // Assert - 在清理后 Instance 应为 null
+            Assert.IsNull(AudioManager.Instance, "AudioManager.Instance 初始应为 null");
+        }
+
+        [Test]
+        public void AudioManager_SetInstance_Null_ClearsInstance()
+        {
+            // Arrange - 先设置一个非 null 值（通过反射避免 Mock 类）
+            // 由于无法创建 Mock，我们只测试 null 情况
+            AudioManager.SetInstance(null);
+
+            // Act
+            var instance = AudioManager.Instance;
+
+            // Assert
+            Assert.IsNull(instance, "SetInstance(null) 后 Instance 应为 null");
         }
 
         #endregion

@@ -3,7 +3,7 @@ using Cysharp.Threading.Tasks;
 using R3;
 using UnityEngine;
 
-namespace Game.Audio.Runtime
+namespace Game.Audio.Runtime.Abstractions
 {
     /// <summary>
     /// 音频服务接口

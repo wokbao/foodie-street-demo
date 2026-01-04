@@ -4,6 +4,7 @@ using Core.Feature.Logging.Abstractions;
 using Core.Feature.SceneManagement.Abstractions;
 using Core.Feature.Loading.Abstractions;
 using Cysharp.Threading.Tasks;
+using Game.Audio.Runtime.Abstractions;
 using Game.Menu.Runtime.Abstractions;
 using Game.UI.Runtime;
 using Game.UI.Runtime.Abstractions;
@@ -77,7 +78,7 @@ namespace Game.Menu.Runtime
                 var loadingService = _resolver.Resolve<ILoadingService>();
                 var navigationService = _resolver.Resolve<IMenuNavigationService>();
                 var quitHandler = _resolver.Resolve<IQuitHandler>();
-                var audioService = _resolver.Resolve<Game.Audio.Runtime.IAudioService>();
+                var audioService = _resolver.Resolve<IAudioService>();
 
                 _presenter = new MainMenuPresenter(
                     view,
