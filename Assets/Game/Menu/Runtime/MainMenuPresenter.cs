@@ -62,7 +62,7 @@ namespace Game.Menu.Runtime
         {
             try
             {
-                await _audioService.PlayBGMAsync("Audio/BGM/bgm_menu", fadeInDuration: 1.0f);
+                await _audioService.PlayBGMAsync(AudioKeys.BGM.Menu, fadeInDuration: 1.0f);
                 _logService?.Information(LogCategory.Menu, "[主菜单] BGM 开始播放");
             }
             catch (Exception ex)
@@ -82,6 +82,8 @@ namespace Game.Menu.Runtime
         {
             if (_isLoading) return;
             _isLoading = true;
+
+            // 点击音效由 UIButtonSound 组件处理
             _view.SetInteractable(false);
             _view.ShowLoadingIndicator(true);
 
@@ -90,11 +92,13 @@ namespace Game.Menu.Runtime
 
         private void OnSettingsClicked()
         {
+            // 点击音效由 UIButtonSound 组件处理
             _navigationService.ShowSettingsAsync().Forget();
         }
 
         private void OnQuitClicked()
         {
+            // 点击音效由 UIButtonSound 组件处理
             _quitHandler.RequestQuitAsync().Forget();
         }
 

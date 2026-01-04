@@ -2,7 +2,7 @@
   "name": "Game.UI.Editor",
   "rootNamespace": "Game.UI.Editor",
   "references": [
-    "Game.UI",
+    "Game",
     "Unity.Addressables",
     "Unity.TextMeshPro",
     "UnityEngine.UI",

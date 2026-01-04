@@ -3,7 +3,6 @@
   "rootNamespace": "Game",
   "references": [
     "Core",
-    "Game.UI",
     "Unity.Addressables",
     "Unity.TextMeshPro",
     "UnityEngine.UI",

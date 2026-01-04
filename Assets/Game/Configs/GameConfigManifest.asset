@@ -22,7 +22,7 @@ MonoBehaviour:
     ProductionOnly: 0
   - Name: UIHierarchyConfig
     AddressableKey: Game/Configs/UIHierarchyConfig
-    ConfigTypeName: Game.UI.Runtime.UIHierarchyConfig, Game.UI
+    ConfigTypeName: Game.UI.Runtime.UIHierarchyConfig, Game
     IsRequired: 1
     Priority: 0
     DevOnly: 0

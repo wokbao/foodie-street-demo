@@ -117,7 +117,7 @@ namespace Game.Audio.Runtime
             }
 
             // 创建 AudioSource
-            var source = CreateAudioSource(AudioChannel.BGM);
+            var source = CreateAudioSource();
             source.clip = clip;
             source.loop = loop;
             source.volume = 0f;
@@ -166,7 +166,7 @@ namespace Game.Audio.Runtime
             }
 
             // 创建 AudioSource
-            var source = CreateAudioSource(channel);
+            var source = CreateAudioSource();
             source.clip = clip;
             source.loop = false;
             source.volume = volume * GetEffectiveVolume(channel);
@@ -309,13 +309,44 @@ namespace Game.Audio.Runtime
             return masterVolume * channelVolume;
         }
 
-        private AudioSource CreateAudioSource(AudioChannel channel)
+        private AudioSource CreateAudioSource()
         {
-            var go = new GameObject($"AudioSource_{channel}");
+            // 从对象池租借 AudioSource（如果池中没有则创建新的）
+            var source = _poolManager.Rent(
+                factory: CreateNewAudioSource,
+                onRent: OnAudioSourceRent,
+                onReturn: OnAudioSourceReturn,
+                maxCapacity: _config.AudioSourcePoolSize);
+            return source;
+        }
+
+        private AudioSource CreateNewAudioSource()
+        {
+            var go = new GameObject("PooledAudioSource");
             go.transform.SetParent(_audioRoot.transform);
             var source = go.AddComponent<AudioSource>();
             source.playOnAwake = false;
             return source;
+        }
+
+        private void OnAudioSourceRent(AudioSource source)
+        {
+            if (source != null && source.gameObject != null)
+            {
+                source.gameObject.SetActive(true);
+            }
+        }
+
+        private void OnAudioSourceReturn(AudioSource source)
+        {
+            if (source != null && source.gameObject != null)
+            {
+                source.Stop();
+                source.clip = null;
+                source.volume = 1f;
+                source.spatialBlend = 0f;
+                source.gameObject.SetActive(false);
+            }
         }
 
         private void OnHandleStopped(AudioHandle handle)
@@ -323,9 +354,10 @@ namespace Game.Audio.Runtime
             _activeHandles.Remove(handle);
 
             var source = handle.GetSource();
-            if (source != null && source.gameObject != null)
+            if (source != null)
             {
-                UnityEngine.Object.Destroy(source.gameObject);
+                // 归还到对象池而不是销毁
+                _poolManager.Return(source);
             }
 
             // 释放资源
