@@ -3,7 +3,6 @@ using Cysharp.Threading.Tasks;
 using Game.Audio.Runtime;
 using UnityEngine;
 using UnityEngine.UI;
-using VContainer;
 
 namespace Game.UI.Runtime
 {
@@ -23,6 +22,8 @@ namespace Game.UI.Runtime
     ///   <item>可选：在 Inspector 中自定义 Click Sound Key</item>
     ///   <item>运行时自动绑定点击事件并播放音效</item>
     /// </list>
+    /// 
+    /// <para><b>实现原理</b>：通过 <see cref="AudioManager.Instance"/> 访问音频服务，无需 DI 注入</para>
     /// </summary>
     [RequireComponent(typeof(Button))]
     [DisallowMultipleComponent]
@@ -40,7 +41,6 @@ namespace Game.UI.Runtime
         [SerializeField] private bool _enabled = true;
 
         private Button _button;
-        private IAudioService _audioService;
         private CancellationTokenSource _cts;
 
         /// <summary>
@@ -57,9 +57,6 @@ namespace Game.UI.Runtime
 
         private void Start()
         {
-            // 尝试从场景中解析 IAudioService
-            TryResolveAudioService();
-
             if (_button != null)
             {
                 _button.onClick.AddListener(OnButtonClick);
@@ -80,41 +77,28 @@ namespace Game.UI.Runtime
 
         private void OnButtonClick()
         {
-            if (!_enabled || _audioService == null) return;
+            if (!_enabled) return;
 
-            PlayClickSoundAsync().Forget();
+            // 通过静态访问器获取音频服务（每次调用都获取最新实例，避免 Scope 切换后引用过期）
+            var audioService = AudioManager.Instance;
+            if (audioService == null)
+            {
+                Debug.LogWarning("[UIButtonSound] AudioService 未就绪，跳过音效播放");
+                return;
+            }
+
+            PlayClickSoundAsync(audioService).Forget();
         }
 
-        private async UniTaskVoid PlayClickSoundAsync()
+        private async UniTaskVoid PlayClickSoundAsync(IAudioService audioService)
         {
             try
             {
-                await _audioService.PlaySFXAsync(EffectiveSoundKey, _volume, AudioChannel.UI, _cts.Token);
+                await audioService.PlaySFXAsync(EffectiveSoundKey, _volume, AudioChannel.UI, _cts.Token);
             }
             catch (System.OperationCanceledException)
             {
                 // 正常取消，忽略
-            }
-        }
-
-        /// <summary>
-        /// 手动注入 AudioService（用于 VContainer 场景）
-        /// </summary>
-        [Inject]
-        public void Construct(IAudioService audioService)
-        {
-            _audioService = audioService;
-        }
-
-        private void TryResolveAudioService()
-        {
-            if (_audioService != null) return;
-
-            // 尝试从父级 LifetimeScope 解析
-            var scope = GetComponentInParent<VContainer.Unity.LifetimeScope>();
-            if (scope != null && scope.Container != null)
-            {
-                _audioService = scope.Container.Resolve<IAudioService>();
             }
         }
 
