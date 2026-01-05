@@ -1,5 +1,45 @@
 # 🍪 Foodie Street 开发日志
 
+## 2026-01-05 (周日)
+
+### 完成的工作
+- ✅ **框架增强 - Phase 1: 单元测试补充**
+  - 创建 `Tests/EditMode/Core/` 目录结构
+  - 实现 `LoadingServiceTests.cs` (7 个测试)
+  - 实现 `ObjectPoolManagerTests.cs` (4 个测试)
+  - 实现 `SceneServiceTests.cs` (3 个测试)
+  - 总计新增 **14 个单元测试**，覆盖核心服务
+- ✅ **框架增强 - Phase 2: ISaveService 数据持久化**
+  - 新增 `Core/Feature/Save/` 模块
+  - 实现 `ISaveService` 接口（多存档槽、元数据查询）
+  - 实现 `SaveService` 运行时（JSON + 本地文件）
+  - 实现 `SaveOptions` 配置（加密、格式化输出）
+  - 支持可选 **AES 加密**
+- ✅ **框架增强 - Phase 3: ITimeManager 时间管理**
+  - 新增 `Core/Feature/TimeManagement/` 模块（命名避免与 UnityEngine.Time 冲突）
+  - 实现 `ITimeManager` 接口（暂停、时间缩放、计时器）
+  - 实现 `ITimer` 接口（单次/重复计时器）
+  - 实现 `TimeManager`（VContainer ITickable 每帧更新）
+- ✅ **服务注册**
+  - 在 `CoreLifetimeScope` 注册 `SaveService` 和 `TimeManager`
+
+### 架构改进
+- **命名空间规范**：`Core.Feature.TimeManagement` 避免与 Unity 内置类型冲突
+- **测试覆盖**：Core 层关键服务测试覆盖率显著提升
+- **数据持久化**：支持多存档槽和加密，满足企业级需求
+
+### 文件变更统计
+| 类型 | 数量 | 文件 |
+|------|------|------|
+| 新增 | 11 | 3 测试 + 4 Save + 4 TimeManagement |
+| 修改 | 2 | CoreLifetimeScope, Tests.EditMode.asmdef |
+
+### 下一步计划
+- [ ] SaveService 和 TimeManager 单元测试
+- [ ] 关注 P1 任务：LocalizationService 完善、IInputService
+
+---
+
 ## 2026-01-04 (周六)
 
 ### 完成的工作

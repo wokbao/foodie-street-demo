@@ -239,4 +239,4 @@ throw new Exception("Scene load failed");
 
 ---
 
-**最后更新**：2026-01-04
+**最后更新**：2026-01-05

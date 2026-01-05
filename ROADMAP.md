@@ -106,18 +106,20 @@
 - [ ] 输入映射系统
 - [ ] 在 `CoreLifetimeScope` 中注册
 
-### 持久化系统（优先级：低）
-- [ ] 定义 `ISaveService` 接口
-- [ ] 本地存储实现
-- [ ] 数据序列化/反序列化
-- [ ] 存档管理
-- [ ] 在 `CoreLifetimeScope` 中注册
+### 持久化系统（优先级：低）✅
+- [x] 定义 `ISaveService` 接口
+- [x] 本地存储实现（JSON + 文件系统）
+- [x] 数据序列化/反序列化
+- [x] 存档管理（多槽位支持）
+- [x] 可选 AES 加密
+- [x] 在 `CoreLifetimeScope` 中注册
 
-### 时间管理（优先级：低）
-- [ ] 定义 `ITimeManager` 接口
-- [ ] 时间缩放功能
-- [ ] 计时器系统
-- [ ] 在 `CoreLifetimeScope` 中注册
+### 时间管理（优先级：低）✅
+- [x] 定义 `ITimeManager` 接口
+- [x] 时间缩放功能
+- [x] 计时器系统（单次/重复）
+- [x] VContainer ITickable 集成
+- [x] 在 `CoreLifetimeScope` 中注册
 
 ---
 
@@ -309,8 +311,13 @@
 
 ## 🧪 Phase 5: 测试与优化
 
-### 单元测试
-- [ ] Core 层服务测试
+### 单元测试 ✅
+- [x] Core 层服务测试
+  - [x] LoadingServiceTests (7 个测试)
+  - [x] ObjectPoolManagerTests (4 个测试)
+  - [x] SceneServiceTests (3 个测试)
+  - [x] EventBusTests (3 个测试)
+  - [x] AudioServiceTests (8 个测试)
 - [ ] Game 层服务测试
 - [ ] 依赖注入测试
 
@@ -381,5 +388,5 @@
 
 ---
 
-**最后更新**：2026-01-04  
+**最后更新**：2026-01-05  
 **当前版本**：v0.1.0-dev
