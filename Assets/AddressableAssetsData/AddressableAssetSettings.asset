@@ -45,7 +45,11 @@ MonoBehaviour:
   m_overridePlayerVersion: '[UnityEditor.PlayerSettings.bundleVersion]'
   m_GroupAssets:
   - {fileID: 11400000, guid: 192f0cbb550b8124ab342d41fd0cc40c, type: 2}
+  - {fileID: 11400000, guid: 06ef1e8e4ecf48249a93a33b3e5b8b45, type: 2}
+  - {fileID: 11400000, guid: c609a764a75ce5c4bb6e7300f90c8287, type: 2}
   - {fileID: 11400000, guid: a5165d09db1022145aeb130749fffda4, type: 2}
+  - {fileID: 11400000, guid: e28b0c740d730c74796e7a15fe30c935, type: 2}
+  - {fileID: 11400000, guid: 9e18daf573df2534c9a7df5ce3561f70, type: 2}
   - {fileID: 11400000, guid: e004b53ac445e46abacab556abd36c61, type: 2}
   - {fileID: 11400000, guid: f71515b7f0f32e5498acd300f2bc34e6, type: 2}
   - {fileID: 11400000, guid: dc75cf59e5b870346be36aca352a5fec, type: 2}
@@ -91,6 +95,10 @@ MonoBehaviour:
   m_LabelTable:
     m_LabelNames:
     - default
+    - Locale
+    - Locale-zh-Hans
+    - Locale-en
+    - Preload
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 4d9b06a90202c4cc19e63589e68ba2f0, type: 2}
