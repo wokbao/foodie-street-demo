@@ -68,7 +68,7 @@ namespace Game.Runtime
                 gameConfigResult = ConfigLoader.LoadFromManifest(_gameConfigManifest);
             }
 
-            // 注册配置到容器
+            // 注册配置到容器（包含 LocalizationConfig，会自动注册为 ILocalizationOptions）
             if (gameConfigResult != null)
             {
                 ConfigRegistry.RegisterToContainer(builder, gameConfigResult);

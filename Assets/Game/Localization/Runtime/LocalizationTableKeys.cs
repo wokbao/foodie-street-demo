@@ -1,3 +1,5 @@
+using Core.Feature.Localization.Abstractions;
+
 namespace Game.Localization.Runtime
 {
     /// <summary>
@@ -15,7 +17,7 @@ namespace Game.Localization.Runtime
         /// <summary>
         /// 通用文本（确认、取消、返回等）
         /// </summary>
-        public const string Shared = "SharedStrings";
+        public const string Shared = DefaultLocalizationOptions.DefaultTable;
 
         /// <summary>
         /// UI 文本（按钮、标签、菜单等）
