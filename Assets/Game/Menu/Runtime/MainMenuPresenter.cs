@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Core.Feature.Localization.Abstractions;
 using Core.Feature.Logging.Abstractions;
 using Core.Feature.Loading.Abstractions;
 using Core.Feature.SceneManagement.Abstractions;
@@ -27,6 +28,7 @@ namespace Game.Menu.Runtime
         private readonly IQuitHandler _quitHandler;
         private readonly ILogService _logService;
         private readonly IAudioService _audioService;
+        private readonly ILocalizationService _localizationService;
 
         private bool _isLoading;
 
@@ -38,7 +40,8 @@ namespace Game.Menu.Runtime
             IMenuNavigationService navigationService,
             IQuitHandler quitHandler,
             ILogService logService,
-            IAudioService audioService)
+            IAudioService audioService,
+            ILocalizationService localizationService)
         {
             _view = view;
             _sceneService = sceneService;
@@ -47,6 +50,7 @@ namespace Game.Menu.Runtime
             _quitHandler = quitHandler;
             _logService = logService;
             _audioService = audioService;
+            _localizationService = localizationService;
         }
 
         public void Initialize()
@@ -105,12 +109,14 @@ namespace Game.Menu.Runtime
 
         private async UniTask StartGameAsync(CancellationToken token)
         {
-            using var scope = _loadingService?.Begin("进入游戏");
+            var enterGameText = _localizationService.GetText(MenuLocalizationKeys.Loading.EnterGame);
+            using var scope = _loadingService?.Begin(enterGameText);
 
             try
             {
                 _logService?.Information(LogCategory.Menu, $"[主菜单] 开始加载场景：{_view.StartSceneKey}");
-                var progress = _loadingService?.CreateProgressReporter("加载场景");
+                var loadingSceneText = _localizationService.GetText(MenuLocalizationKeys.Loading.LoadingScene);
+                var progress = _loadingService?.CreateProgressReporter(loadingSceneText);
                 await _sceneService.LoadSceneAsync(_view.StartSceneKey, _view.UseLoadingScreen, progress, token);
             }
             catch (Exception ex)

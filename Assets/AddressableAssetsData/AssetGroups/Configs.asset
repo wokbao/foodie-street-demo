@@ -27,6 +27,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 41fad2fba88f27a4ab7d7f71028f1157
+    m_Address: Core/Configs/LocalizationConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6589e8c30265d1e4d870301cf9a199f4
     m_Address: Core/Configs/LoggingConfig
     m_ReadOnly: 0
